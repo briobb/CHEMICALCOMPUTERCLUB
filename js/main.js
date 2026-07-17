@@ -20,6 +20,7 @@ navigation.addEventListener('click', (event) => {
 const modal = document.querySelector('#detail-modal');
 const modalTitle = document.querySelector('#modal-title');
 const modalCopy = document.querySelector('#modal-copy');
+const modalPrice = document.querySelector('#modal-price');
 const modalImage = document.querySelector('#modal-image');
 const modalPurchase = document.querySelector('#modal-purchase');
 let lastTrigger;
@@ -29,6 +30,8 @@ function openModal(trigger) {
   lastTrigger = trigger;
   modalTitle.textContent = source.dataset.modalTitle;
   modalCopy.textContent = source.dataset.modalCopy;
+  modalPrice.textContent = source.dataset.modalPrice ? `¥${source.dataset.modalPrice}` : '';
+  modalPrice.hidden = !source.dataset.modalPrice;
   if (source.dataset.modalImage) {
     modalImage.src = source.dataset.modalImage;
     modalImage.alt = `${source.dataset.modalTitle}の拡大画像`;
