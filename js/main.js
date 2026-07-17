@@ -59,7 +59,6 @@ function closeModal() {
   document.body.classList.remove('modal-open');
   lastTrigger?.focus();
 }
-document.querySelector('.modal-close').addEventListener('click', closeModal);
 document.querySelector('.modal-close-action').addEventListener('click', closeModal);
 modal.addEventListener('click', (event) => {
   if (event.target === modal) closeModal();
