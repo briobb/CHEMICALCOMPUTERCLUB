@@ -1,15 +1,18 @@
 // Mobile navigation
 const menuButton = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('.site-nav');
+const menuLabel = menuButton.querySelector('.sr-only');
 menuButton.addEventListener('click', () => {
   const open = menuButton.getAttribute('aria-expanded') === 'true';
   menuButton.setAttribute('aria-expanded', String(!open));
   navigation.classList.toggle('open', !open);
+  menuLabel.textContent = open ? 'メニューを開く' : 'メニューを閉じる';
 });
 navigation.addEventListener('click', (event) => {
   if (event.target.matches('a')) {
     navigation.classList.remove('open');
     menuButton.setAttribute('aria-expanded', 'false');
+    menuLabel.textContent = 'メニューを開く';
   }
 });
 
