@@ -40,9 +40,12 @@ function openModal(trigger) {
     modalImage.hidden = true;
   }
   if (source.dataset.modalLink) {
-    modalPurchase.href = source.dataset.modalLink;
     modalPurchase.textContent = source.dataset.modalLinkLabel || 'Purchase';
     modalPurchase.hidden = false;
+    modalPurchase.removeAttribute('href');
+    modalPurchase.setAttribute('aria-disabled', 'true');
+    modalPurchase.setAttribute('tabindex', '-1');
+    modalPurchase.classList.add('is-disabled');
   } else {
     modalPurchase.hidden = true;
     modalPurchase.removeAttribute('href');

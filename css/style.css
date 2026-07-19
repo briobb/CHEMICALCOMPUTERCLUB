@@ -40,3 +40,5 @@
 
 /* Content must remain readable even when JavaScript is unavailable or cached. */
 .reveal,.reveal.is-visible{opacity:1;transform:none}
+
+.button.is-disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
