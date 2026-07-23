@@ -43,6 +43,24 @@ function openModal(trigger) {
   }
   modalGallery.replaceChildren();
   const galleryImages = source.dataset.modalGallery?.split(',').filter(Boolean) || [];
+  if (source.dataset.modalImage && galleryImages.length > 0) {
+    const primaryButton = document.createElement('button');
+    primaryButton.type = 'button';
+    primaryButton.className = 'modal-thumbnail is-primary is-active';
+    primaryButton.setAttribute('aria-label', `${source.dataset.modalTitle}のメイン写真を拡大表示`);
+    const primaryImage = document.createElement('img');
+    primaryImage.src = source.dataset.modalImage;
+    primaryImage.alt = `${source.dataset.modalTitle}のメイン写真`;
+    primaryButton.appendChild(primaryImage);
+    primaryButton.addEventListener('click', () => {
+      modalImage.src = source.dataset.modalImage;
+      modalImage.alt = primaryImage.alt;
+      modalGallery.querySelectorAll('.modal-thumbnail').forEach((thumbnail) => {
+        thumbnail.classList.toggle('is-active', thumbnail === primaryButton);
+      });
+    });
+    modalGallery.appendChild(primaryButton);
+  }
   galleryImages.forEach((imagePath, index) => {
     const button = document.createElement('button');
     button.type = 'button';
