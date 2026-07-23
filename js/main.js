@@ -22,6 +22,8 @@ const modalTitle = document.querySelector('#modal-title');
 const modalCopy = document.querySelector('#modal-copy');
 const modalPrice = document.querySelector('#modal-price');
 const modalImage = document.querySelector('#modal-image');
+const modalMedia = document.querySelector('#modal-media');
+const modalGallery = document.querySelector('#modal-gallery');
 const modalPurchase = document.querySelector('#modal-purchase');
 let lastTrigger;
 
@@ -39,6 +41,18 @@ function openModal(trigger) {
   } else {
     modalImage.hidden = true;
   }
+  modalGallery.replaceChildren();
+  const galleryImages = source.dataset.modalGallery?.split(',').filter(Boolean) || [];
+  galleryImages.forEach((imagePath, index) => {
+    const image = document.createElement('img');
+    image.src = imagePath;
+    image.alt = `${source.dataset.modalTitle}の商品写真 ${index + 2}`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    modalGallery.appendChild(image);
+  });
+  modalGallery.hidden = galleryImages.length === 0;
+  modalMedia.hidden = !source.dataset.modalImage && galleryImages.length === 0;
   if (source.dataset.modalLink) {
     modalPurchase.textContent = source.dataset.modalLinkLabel || 'Purchase';
     modalPurchase.hidden = false;

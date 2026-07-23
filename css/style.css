@@ -42,3 +42,7 @@
 .reveal,.reveal.is-visible{opacity:1;transform:none}
 
 .button.is-disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+
+/* Product gallery: scroll images independently on desktop and naturally on mobile. */
+.modal{max-height:calc(100svh - 32px);overflow:hidden}.modal-layout{max-height:calc(100svh - 34px)}.modal-media{overflow-y:auto;background:var(--paper)}.modal-media>img{width:100%;min-height:480px;object-fit:cover}.modal-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px}.modal-gallery[hidden]{display:none}.modal-gallery img{width:100%;aspect-ratio:3/4;object-fit:cover}.modal-gallery img:nth-child(3){aspect-ratio:4/3;grid-column:1/-1}
+@media (max-width:800px){.modal{max-height:calc(100svh - 24px);overflow-y:auto}.modal-layout{max-height:none}.modal-media{overflow:visible}.modal-media>img{min-height:0;max-height:none;aspect-ratio:3/4;object-fit:cover}.modal-gallery{gap:6px;padding:6px}.modal-detail{padding:32px 24px}}
