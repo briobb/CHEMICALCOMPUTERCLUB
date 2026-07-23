@@ -44,12 +44,24 @@ function openModal(trigger) {
   modalGallery.replaceChildren();
   const galleryImages = source.dataset.modalGallery?.split(',').filter(Boolean) || [];
   galleryImages.forEach((imagePath, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'modal-thumbnail';
+    button.setAttribute('aria-label', `${source.dataset.modalTitle}の商品写真 ${index + 2}を拡大表示`);
     const image = document.createElement('img');
     image.src = imagePath;
     image.alt = `${source.dataset.modalTitle}の商品写真 ${index + 2}`;
     image.loading = 'lazy';
     image.decoding = 'async';
-    modalGallery.appendChild(image);
+    button.appendChild(image);
+    button.addEventListener('click', () => {
+      modalImage.src = imagePath;
+      modalImage.alt = image.alt;
+      modalGallery.querySelectorAll('.modal-thumbnail').forEach((thumbnail) => {
+        thumbnail.classList.toggle('is-active', thumbnail === button);
+      });
+    });
+    modalGallery.appendChild(button);
   });
   modalGallery.hidden = galleryImages.length === 0;
   modalMedia.hidden = !source.dataset.modalImage && galleryImages.length === 0;
