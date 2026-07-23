@@ -48,3 +48,5 @@
 @media (max-width:800px){.modal{max-height:calc(100svh - 24px);overflow-y:auto}.modal-layout{max-height:none}.modal-media{overflow:visible}.modal-media>img{min-height:0;max-height:none;aspect-ratio:3/4;object-fit:cover}.modal-gallery{gap:6px;padding:6px}.modal-detail{padding:32px 24px}}
 
 @media (max-width:800px){.modal-gallery{display:flex;gap:10px;overflow-x:auto;padding:8px 15% 14px 8px;scroll-snap-type:x mandatory;scroll-padding-left:8px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scrollbar-width:none}.modal-gallery::-webkit-scrollbar{display:none}.modal-thumbnail{flex:0 0 82%;width:82%;scroll-snap-align:start}.modal-thumbnail img{width:100%;aspect-ratio:3/4;object-fit:cover}}
+
+@media (max-width:800px){.modal-media{display:flex;gap:10px;overflow-x:auto;padding:8px 15% 14px 8px;scroll-snap-type:x mandatory;scroll-padding-left:8px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scrollbar-width:none}.modal-media::-webkit-scrollbar{display:none}.modal-media>img{flex:0 0 82%;width:82%;scroll-snap-align:start}.modal-gallery{display:contents}.modal-thumbnail{flex:0 0 82%;width:82%;scroll-snap-align:start}}
