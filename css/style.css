@@ -35,6 +35,7 @@
 .about .section-head h2{line-height:.96}
 .about-tagline{margin:20px 0 0;font-size:clamp(15px,1.5vw,20px);letter-spacing:.08em}
 .about .section-head{margin-bottom:0}
+#modal-copy{white-space:pre-line}
 
 .menu-toggle span:not(.sr-only){transition:transform .22s ease,opacity .18s ease}.menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}.menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}.menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
