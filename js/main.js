@@ -86,10 +86,17 @@ function openModal(trigger) {
   if (source.dataset.modalLink) {
     modalPurchase.textContent = source.dataset.modalLinkLabel || 'Purchase';
     modalPurchase.hidden = false;
-    modalPurchase.removeAttribute('href');
-    modalPurchase.setAttribute('aria-disabled', 'true');
-    modalPurchase.setAttribute('tabindex', '-1');
-    modalPurchase.classList.add('is-disabled');
+    const purchaseEnabled = source.dataset.modalLinkEnabled === 'true';
+    modalPurchase.classList.toggle('is-disabled', !purchaseEnabled);
+    if (purchaseEnabled) {
+      modalPurchase.href = source.dataset.modalLink;
+      modalPurchase.removeAttribute('aria-disabled');
+      modalPurchase.removeAttribute('tabindex');
+    } else {
+      modalPurchase.removeAttribute('href');
+      modalPurchase.setAttribute('aria-disabled', 'true');
+      modalPurchase.setAttribute('tabindex', '-1');
+    }
   } else {
     modalPurchase.hidden = true;
     modalPurchase.removeAttribute('href');
