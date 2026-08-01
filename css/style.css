@@ -57,3 +57,6 @@
 @media (max-width:800px){.modal-thumbnail.is-primary{display:none}}
 
 @media (max-width:800px){.about-tagline{margin-top:8px}.about .section-head{margin-bottom:30px}}
+
+.event-date b{font-size:48px}.event-date small{font-size:12px;letter-spacing:.08em}
+@media (max-width:800px){.event-date b{font-size:38px}.event-date small{font-size:11px}}
