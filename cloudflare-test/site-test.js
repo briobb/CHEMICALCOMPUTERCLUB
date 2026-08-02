@@ -45,6 +45,7 @@ function openModal(trigger) {
     image: source.dataset.modalImage
   } : null;
   cartOptions.hidden = !currentProduct;
+  document.querySelector('#cart-feedback').textContent = '';
   productQuantity.value = '1';
   const variants = source.dataset.productVariants?.split(',').filter(Boolean) || [];
   variantLabel.hidden = variants.length === 0;
