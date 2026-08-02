@@ -124,6 +124,7 @@ modal.addEventListener('close', () => document.body.classList.remove('modal-open
 
 // Cart test: local browser storage only. No payment request is made.
 const CART_KEY = 'ccc-modal-cart-test';
+const CHECKOUT_ENDPOINT = 'https://ccc-checkout-test.chemicalcomputerclub.workers.dev/create-checkout-session';
 const cartModal = document.querySelector('#cart-modal');
 let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 
@@ -177,7 +178,39 @@ document.querySelector('#cart-items').addEventListener('click', (event) => {
   if (button.dataset.cartAction === 'remove' || item.quantity <= 0) cart = cart.filter((entry) => entry.key !== item.key);
   saveAndRenderCart();
 });
-document.querySelector('#test-checkout').addEventListener('click', () => window.alert('カート機能は正常に動作しています。決済処理はまだ接続されていません。'));
+document.querySelector('#test-checkout').addEventListener('click', async () => {
+  if (cart.length === 0) return;
+  const button = document.querySelector('#test-checkout');
+  const status = document.querySelector('#checkout-status');
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Connecting...';
+  status.textContent = '';
+
+  try {
+    const response = await fetch(CHECKOUT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        items: cart.map((item) => ({
+          productId: item.id,
+          size: item.variant,
+          color: item.color,
+          quantity: item.quantity
+        }))
+      })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.url) {
+      throw new Error(data.error || '決済ページを作成できませんでした。');
+    }
+    window.location.assign(data.url);
+  } catch (error) {
+    status.textContent = error.message || '通信に失敗しました。時間をおいて再度お試しください。';
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+});
 cartModal.addEventListener('click', (event) => { if (event.target === cartModal) cartModal.close(); });
 saveAndRenderCart();
 

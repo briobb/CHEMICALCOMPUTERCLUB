@@ -6,7 +6,7 @@
   <meta name="description" content="Chemical Computer Club — 化学とコンピューターで、暮らしをもっと豊かに。">
   <title>Chemical Computer Club</title>
   <link rel="stylesheet" href="./site-test.css?v=2">
-  <script src="./site-test.js?v=3" defer></script>
+  <script src="./site-test.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
@@ -84,6 +84,6 @@
 
   <dialog class="modal" id="detail-modal" aria-labelledby="modal-title"><div class="modal-layout"><div class="modal-media" id="modal-media"><img id="modal-image" src="../images/ccclogot1.PNG" alt=""><div class="modal-gallery" id="modal-gallery" aria-label="商品写真一覧" hidden></div></div><div class="modal-detail"><p class="eyebrow">CCC / DETAIL FILE</p><h2 id="modal-title"></h2><p id="modal-copy"></p><p class="modal-price" id="modal-price"></p><div class="cart-options" id="cart-options"><label id="color-label" hidden>カラー<select id="product-color"></select></label><label id="variant-label" hidden>サイズ<select id="product-variant"></select></label><label>数量<input id="product-quantity" type="number" min="1" max="20" value="1"></label><button class="button" id="add-to-cart" type="button">Add to Cart</button><p class="cart-feedback" id="cart-feedback" aria-live="polite"></p></div><div class="modal-actions"><button class="button button-secondary modal-close-action" type="button">Close</button></div></div></div></dialog>
 
-  <dialog class="cart-modal" id="cart-modal" aria-labelledby="cart-title"><div class="cart-dialog-head"><div><p class="eyebrow">CCC / SHOPPING CART</p><h2 id="cart-title">Your equipment</h2></div><button class="text-button" id="close-cart" type="button">Close</button></div><div id="cart-items"></div><div class="cart-summary"><span>合計</span><strong id="cart-total">¥0</strong></div><div class="cart-dialog-actions"><button class="button button-secondary" id="clear-cart" type="button">Clear Cart</button><button class="button" id="test-checkout" type="button">Checkout Test</button></div><p class="cart-test-note">テスト版です。決済処理には接続されていません。</p></dialog>
+  <dialog class="cart-modal" id="cart-modal" aria-labelledby="cart-title"><div class="cart-dialog-head"><div><p class="eyebrow">CCC / SHOPPING CART</p><h2 id="cart-title">Your equipment</h2></div><button class="text-button" id="close-cart" type="button">Close</button></div><div id="cart-items"></div><div class="cart-summary"><span>合計</span><strong id="cart-total">¥0</strong></div><div class="cart-dialog-actions"><button class="button button-secondary" id="clear-cart" type="button">Clear Cart</button><button class="button" id="test-checkout" type="button">Stripe Checkoutへ進む</button></div><p class="cart-test-note">Stripeのテスト決済ページへ移動します。実際の請求は発生しません。</p><p class="cart-feedback" id="checkout-status" aria-live="polite"></p></dialog>
 </body>
 </html>
