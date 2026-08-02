@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ccc-checkout-test",
   "main": "src/index.js",
-  "compatibility_date": "2026-08-03",
+  "compatibility_date": "2026-08-02",
   "vars": {
     "SITE_URL": "https://briobb.github.io/CHEMICALCOMPUTERCLUB",
     "ALLOWED_ORIGIN": "https://briobb.github.io"
