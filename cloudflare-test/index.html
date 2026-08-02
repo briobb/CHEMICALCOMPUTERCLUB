@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>CCC Cart Test</title>
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <div>
+      <p class="brand-label">CHEMICAL COMPUTER CLUB</p>
+      <h1>Cart System Test</h1>
+    </div>
+
+    <a href="#cart" class="cart-link">
+      CART
+      <span id="cart-count">0</span>
+    </a>
+  </header>
+
+  <main class="page-container">
+
+    <!-- Tシャツ1 -->
+    <section class="product-card">
+      <div class="product-heading">
+        <div>
+          <p class="product-number">ITEM 01</p>
+          <h2>CCC Standard T-Shirt</h2>
+          <p class="product-description">
+            サイズごとに数量を指定できます。
+          </p>
+        </div>
+
+        <p class="product-price">¥6,000</p>
+      </div>
+
+      <div class="variation-table-wrapper">
+        <table class="variation-table">
+          <thead>
+            <tr>
+              <th>サイズ</th>
+              <th>数量</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>S</td>
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt1-quantity"
+                  data-size="S"
+                >
+              </td>
+            </tr>
+
+            <tr>
+              <td>M</td>
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt1-quantity"
+                  data-size="M"
+                >
+              </td>
+            </tr>
+
+            <tr>
+              <td>L</td>
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt1-quantity"
+                  data-size="L"
+                >
+              </td>
+            </tr>
+
+            <tr>
+              <td>XL</td>
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt1-quantity"
+                  data-size="XL"
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        type="button"
+        class="add-button"
+        id="add-tshirt1"
+      >
+        選択したサイズをカートに入れる
+      </button>
+
+      <p class="product-message" id="tshirt1-message"></p>
+    </section>
+
+    <!-- Tシャツ2 -->
+    <section class="product-card">
+      <div class="product-heading">
+        <div>
+          <p class="product-number">ITEM 02</p>
+          <h2>CCC Color T-Shirt</h2>
+          <p class="product-description">
+            カラーとサイズの組み合わせごとに数量を指定できます。
+          </p>
+        </div>
+
+        <p class="product-price">¥6,500</p>
+      </div>
+
+      <div class="variation-table-wrapper">
+        <table class="variation-table color-size-table">
+          <thead>
+            <tr>
+              <th>カラー</th>
+              <th>S</th>
+              <th>M</th>
+              <th>L</th>
+              <th>XL</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <th>Ivory</th>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Ivory"
+                  data-size="S"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Ivory"
+                  data-size="M"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Ivory"
+                  data-size="L"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Ivory"
+                  data-size="XL"
+                >
+              </td>
+            </tr>
+
+            <tr>
+              <th>Navy</th>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Navy"
+                  data-size="S"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Navy"
+                  data-size="M"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Navy"
+                  data-size="L"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Navy"
+                  data-size="XL"
+                >
+              </td>
+            </tr>
+
+            <tr>
+              <th>Orange</th>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Orange"
+                  data-size="S"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Orange"
+                  data-size="M"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Orange"
+                  data-size="L"
+                >
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value="0"
+                  class="quantity-input tshirt2-quantity"
+                  data-color="Orange"
+                  data-size="XL"
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        type="button"
+        class="add-button"
+        id="add-tshirt2"
+      >
+        選択した組み合わせをカートに入れる
+      </button>
+
+      <p class="product-message" id="tshirt2-message"></p>
+    </section>
+
+    <!-- マグカップ -->
+    <section class="product-card">
+      <div class="product-heading">
+        <div>
+          <p class="product-number">ITEM 03</p>
+          <h2>CCC Buffer Mug</h2>
+          <p class="product-description">
+            サイズやカラーの選択はありません。
+          </p>
+        </div>
+
+        <p class="product-price">¥2,500</p>
+      </div>
+
+      <div class="mug-quantity-area">
+        <label for="mug-quantity">
+          数量
+        </label>
+
+        <input
+          type="number"
+          id="mug-quantity"
+          min="0"
+          max="20"
+          value="0"
+          class="quantity-input"
+        >
+      </div>
+
+      <button
+        type="button"
+        class="add-button"
+        id="add-mug"
+      >
+        マグカップをカートに入れる
+      </button>
+
+      <p class="product-message" id="mug-message"></p>
+    </section>
+
+    <!-- カート -->
+    <section class="cart-section" id="cart">
+      <div class="cart-heading">
+        <div>
+          <p class="product-number">SHOPPING CART</p>
+          <h2>カート内容</h2>
+        </div>
+
+        <button
+          type="button"
+          class="clear-button"
+          id="clear-cart"
+        >
+          カートを空にする
+        </button>
+      </div>
+
+      <div id="cart-items"></div>
+
+      <div class="cart-summary">
+        <div>
+          <span>商品点数</span>
+          <strong id="summary-count">0点</strong>
+        </div>
+
+        <div>
+          <span>合計金額</span>
+          <strong id="summary-total">¥0</strong>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="checkout-button"
+        id="checkout-button"
+      >
+        Stripe Checkoutへ進む
+      </button>
+
+      <p class="checkout-note">
+        現在はテスト段階のため、Stripe決済にはまだ接続されていません。
+      </p>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
