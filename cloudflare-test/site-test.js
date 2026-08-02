@@ -27,6 +27,8 @@ const modalGallery = document.querySelector('#modal-gallery');
 const cartOptions = document.querySelector('#cart-options');
 const variantLabel = document.querySelector('#variant-label');
 const productVariant = document.querySelector('#product-variant');
+const colorLabel = document.querySelector('#color-label');
+const productColor = document.querySelector('#product-color');
 const productQuantity = document.querySelector('#product-quantity');
 let lastTrigger;
 let currentProduct = null;
@@ -50,6 +52,9 @@ function openModal(trigger) {
   const variants = source.dataset.productVariants?.split(',').filter(Boolean) || [];
   variantLabel.hidden = variants.length === 0;
   productVariant.replaceChildren(...variants.map((variant) => new Option(variant, variant)));
+  const colors = source.dataset.productColors?.split(',').filter(Boolean) || [];
+  colorLabel.hidden = colors.length === 0;
+  productColor.replaceChildren(...colors.map((color) => new Option(color, color)));
   if (source.dataset.modalImage) {
     modalImage.src = source.dataset.modalImage;
     modalImage.alt = `${source.dataset.modalTitle}の拡大画像`;
@@ -141,7 +146,7 @@ function saveAndRenderCart() {
   container.innerHTML = cart.map((item) => `
     <article class="cart-line">
       <img src="${item.image}" alt="">
-      <div><h3>${item.name}</h3><p>${item.variant ? `サイズ：${item.variant}` : 'バリエーションなし'}</p><p>${formatPrice(item.price)}</p></div>
+      <div><h3>${item.name}</h3><p>${[item.color ? `カラー：${item.color}` : '', item.variant ? `サイズ：${item.variant}` : ''].filter(Boolean).join(' / ') || 'バリエーションなし'}</p><p>${formatPrice(item.price)}</p></div>
       <div class="cart-line-controls"><button type="button" data-cart-action="decrease" data-key="${item.key}" aria-label="数量を減らす">−</button><span>${item.quantity}</span><button type="button" data-cart-action="increase" data-key="${item.key}" aria-label="数量を増やす">＋</button><button type="button" data-cart-action="remove" data-key="${item.key}">削除</button></div>
     </article>`).join('');
 }
@@ -150,10 +155,11 @@ document.querySelector('#add-to-cart').addEventListener('click', () => {
   if (!currentProduct) return;
   const quantity = Math.max(1, Math.min(20, Number.parseInt(productQuantity.value, 10) || 1));
   const variant = variantLabel.hidden ? '' : productVariant.value;
-  const key = [currentProduct.id, variant].filter(Boolean).join('-');
+  const color = colorLabel.hidden ? '' : productColor.value;
+  const key = [currentProduct.id, color, variant].filter(Boolean).join('-');
   const existing = cart.find((item) => item.key === key);
   if (existing) existing.quantity += quantity;
-  else cart.push({ ...currentProduct, key, variant, quantity });
+  else cart.push({ ...currentProduct, key, color, variant, quantity });
   saveAndRenderCart();
   document.querySelector('#cart-feedback').textContent = `${quantity}点をカートに追加しました。`;
 });
