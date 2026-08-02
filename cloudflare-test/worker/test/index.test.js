@@ -1,6 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createStripeParameters, validateCart } from "../src/index.js";
+import { createStripeParameters, isAllowedOrigin, validateCart } from "../src/index.js";
+
+test("allows configured site origins and local development", () => {
+  const configured = "https://chemicalcomputerclub.com, https://briobb.github.io";
+  assert.equal(isAllowedOrigin("https://chemicalcomputerclub.com", configured), true);
+  assert.equal(isAllowedOrigin("https://briobb.github.io", configured), true);
+  assert.equal(isAllowedOrigin("http://localhost:8080", configured), true);
+  assert.equal(isAllowedOrigin("https://example.com", configured), false);
+});
 
 test("validates a cart with product variations", () => {
   const items = validateCart([

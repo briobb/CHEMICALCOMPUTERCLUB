@@ -30,9 +30,13 @@ function json(data, status = 200, headers = {}) {
   });
 }
 
-function isAllowedOrigin(origin, configuredOrigin) {
+export function isAllowedOrigin(origin, configuredOrigins) {
   if (!origin) return false;
-  if (origin === configuredOrigin) return true;
+  const allowedOrigins = String(configuredOrigins || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (allowedOrigins.includes(origin)) return true;
   return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 }
 
