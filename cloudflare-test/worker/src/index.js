@@ -17,6 +17,10 @@ const PRODUCTS = Object.freeze({
     price: 2200,
     sizes: ["S", "M", "L"],
     colors: ["Ivory", "Navy", "Orange"]
+  },
+  "test-item": {
+    name: "Test Item",
+    price: 100
   }
 });
 

@@ -72,6 +72,12 @@ test("builds production checkout return URLs", () => {
   assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
 });
 
+test("accepts the production checkout test item at 100 yen", () => {
+  const items = validateCart([{ productId: "test-item", quantity: 1 }]);
+  assert.equal(items[0].name, "Test Item");
+  assert.equal(items[0].unitAmount, 100);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";
