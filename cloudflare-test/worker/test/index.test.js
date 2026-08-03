@@ -1,6 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createStripeParameters, isAllowedOrigin, validateCart } from "../src/index.js";
+import worker, {
+  createStripeParameters,
+  isAllowedOrigin,
+  validateCart,
+  verifyStripeSignature
+} from "../src/index.js";
+
+async function stripeSignature(payload, secret, timestamp) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${timestamp}.${payload}`)
+  );
+  return Array.from(new Uint8Array(signature), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 
 test("allows configured site origins and local development", () => {
   const configured = "https://chemicalcomputerclub.com, https://briobb.github.io";
@@ -37,4 +58,44 @@ test("builds Stripe Checkout line item parameters", () => {
     params.get("success_url"),
     "https://example.com/cloudflare-test/thank-you.html?session_id={CHECKOUT_SESSION_ID}"
   );
+});
+
+test("verifies a current Stripe webhook signature", async () => {
+  const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
+  const secret = "whsec_test_secret";
+  const timestamp = 1_800_000_000;
+  const signature = await stripeSignature(payload, secret, timestamp);
+
+  assert.equal(
+    await verifyStripeSignature(payload, `t=${timestamp},v1=${signature}`, secret, timestamp),
+    true
+  );
+  assert.equal(
+    await verifyStripeSignature(payload, `t=${timestamp},v1=${signature}`, "wrong-secret", timestamp),
+    false
+  );
+  assert.equal(
+    await verifyStripeSignature(payload, `t=${timestamp},v1=${signature}`, secret, timestamp + 301),
+    false
+  );
+});
+
+test("accepts a signed checkout completion webhook", async () => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const secret = "whsec_test_secret";
+  const payload = JSON.stringify({
+    id: "evt_test",
+    type: "checkout.session.completed",
+    data: { object: { id: "cs_test_123", payment_status: "paid" } }
+  });
+  const signature = await stripeSignature(payload, secret, timestamp);
+  const request = new Request("https://worker.example/stripe-webhook", {
+    method: "POST",
+    headers: { "stripe-signature": `t=${timestamp},v1=${signature}` },
+    body: payload
+  });
+  const response = await worker.fetch(request, { STRIPE_WEBHOOK_SECRET: secret });
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { received: true });
 });
