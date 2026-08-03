@@ -29,6 +29,9 @@
 .products,.events,.links{padding-top:clamp(54px,6vw,88px)}
 @media (max-width:800px){.products,.events,.links{padding-top:48px}}
 
+.products-page-main{padding-top:88px}.product-catalog{min-height:calc(100svh - 88px);border-top:0}.product-catalog .section-head h1{font-size:clamp(48px,7vw,110px);letter-spacing:-.055em;line-height:.9;margin:24px 0 0}.product-catalog .section-head-row>p{max-width:460px}
+@media (max-width:800px){.products-page-main{padding-top:72px}.product-catalog{min-height:calc(100svh - 72px)}}
+
 .brand img{width:auto;height:54px;object-fit:contain}
 @media (max-width:800px){.brand img{height:44px}}
 
