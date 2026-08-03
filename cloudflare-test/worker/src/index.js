@@ -146,12 +146,18 @@ export function validateCart(items) {
   });
 }
 
-export function createStripeParameters(items, siteUrl) {
+export function createStripeParameters(
+  items,
+  siteUrl,
+  successPath = "/cloudflare-test/thank-you.html",
+  cancelPath = "/cloudflare-test/index-cart-test.html?checkout=cancelled"
+) {
   const params = new URLSearchParams();
   params.set("mode", "payment");
   params.set("locale", "ja");
-  params.set("success_url", `${siteUrl}/cloudflare-test/thank-you.html?session_id={CHECKOUT_SESSION_ID}`);
-  params.set("cancel_url", `${siteUrl}/cloudflare-test/index-cart-test.html?checkout=cancelled`);
+  const successSeparator = successPath.includes("?") ? "&" : "?";
+  params.set("success_url", `${siteUrl}${successPath}${successSeparator}session_id={CHECKOUT_SESSION_ID}`);
+  params.set("cancel_url", `${siteUrl}${cancelPath}`);
   params.set("shipping_address_collection[allowed_countries][0]", "JP");
 
   items.forEach((item, index) => {
@@ -189,7 +195,12 @@ async function createCheckoutSession(request, env, cors) {
       authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
       "content-type": "application/x-www-form-urlencoded"
     },
-    body: createStripeParameters(items, env.SITE_URL)
+    body: createStripeParameters(
+      items,
+      env.SITE_URL,
+      env.CHECKOUT_SUCCESS_PATH,
+      env.CHECKOUT_CANCEL_PATH
+    )
   });
   const stripeData = await stripeResponse.json();
 

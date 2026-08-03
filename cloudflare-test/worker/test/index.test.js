@@ -62,6 +62,16 @@ test("builds Stripe Checkout line item parameters", () => {
   );
 });
 
+test("builds production checkout return URLs", () => {
+  const items = validateCart([{ productId: "mug", quantity: 1 }]);
+  const params = createStripeParameters(items, "https://chemicalcomputerclub.com", "/thank-you.html", "/?checkout=cancelled");
+  assert.equal(
+    params.get("success_url"),
+    "https://chemicalcomputerclub.com/thank-you.html?session_id={CHECKOUT_SESSION_ID}"
+  );
+  assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";
