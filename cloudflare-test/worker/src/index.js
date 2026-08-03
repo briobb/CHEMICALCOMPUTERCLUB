@@ -56,6 +56,20 @@ function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function formatYen(amount) {
+  return `¥${Number(amount || 0).toLocaleString("ja-JP")}`;
+}
+
 function hexToBytes(hex) {
   if (!/^[0-9a-f]+$/i.test(hex) || hex.length % 2 !== 0) return null;
   return Uint8Array.from(hex.match(/.{2}/g), (byte) => Number.parseInt(byte, 16));
@@ -266,6 +280,76 @@ async function saveOrder(db, order) {
   await db.batch(statements);
 }
 
+export function createOrderEmail(order) {
+  const itemText = order.items.map((item) =>
+    `- ${item.description} × ${item.quantity}（${formatYen(item.amountTotal)}）`
+  ).join("\n");
+  const addressParts = [
+    order.shippingPostalCode ? `〒${order.shippingPostalCode}` : "",
+    order.shippingState,
+    order.shippingCity,
+    order.shippingLine1,
+    order.shippingLine2
+  ].filter(Boolean);
+  const text = [
+    "CCCストアに新しい注文が入りました。",
+    "",
+    `注文番号: ${order.sessionId}`,
+    `合計: ${formatYen(order.amountTotal)}`,
+    `決済状態: ${order.paymentStatus}`,
+    "",
+    "商品:",
+    itemText,
+    "",
+    `購入者: ${order.customerName || "未入力"}`,
+    `メール: ${order.customerEmail || "未入力"}`,
+    `電話番号: ${order.customerPhone || "未入力"}`,
+    `配送先名: ${order.shippingName || "未入力"}`,
+    `配送先: ${addressParts.join(" ") || "未入力"}`,
+    "",
+    "発送状態はCloudflare D1で unfulfilled として登録されています。"
+  ].join("\n");
+
+  const itemHtml = order.items.map((item) =>
+    `<li>${escapeHtml(item.description)} × ${item.quantity}（${escapeHtml(formatYen(item.amountTotal))}）</li>`
+  ).join("");
+  const html = `
+    <h1>CCCストアに新しい注文が入りました。</h1>
+    <p><strong>注文番号:</strong> ${escapeHtml(order.sessionId)}<br>
+    <strong>合計:</strong> ${escapeHtml(formatYen(order.amountTotal))}<br>
+    <strong>決済状態:</strong> ${escapeHtml(order.paymentStatus)}</p>
+    <h2>商品</h2><ul>${itemHtml}</ul>
+    <h2>購入者・配送先</h2>
+    <p><strong>購入者:</strong> ${escapeHtml(order.customerName || "未入力")}<br>
+    <strong>メール:</strong> ${escapeHtml(order.customerEmail || "未入力")}<br>
+    <strong>電話番号:</strong> ${escapeHtml(order.customerPhone || "未入力")}<br>
+    <strong>配送先名:</strong> ${escapeHtml(order.shippingName || "未入力")}<br>
+    <strong>配送先:</strong> ${escapeHtml(addressParts.join(" ") || "未入力")}</p>
+    <p>発送状態はCloudflare D1で <code>unfulfilled</code> として登録されています。</p>
+  `;
+
+  return {
+    to: "chemicalcomputerclub@gmail.com",
+    from: { email: "orders@chemicalcomputerclub.com", name: "CCC Orders" },
+    subject: `[CCC] 新しい注文 ${formatYen(order.amountTotal)}`,
+    text,
+    html
+  };
+}
+
+async function notifyOrder(env, order) {
+  const existing = await env.DB.prepare(
+    "SELECT notification_sent_at FROM orders WHERE session_id = ?1 LIMIT 1"
+  ).bind(order.sessionId).first();
+  if (existing?.notification_sent_at) return false;
+
+  await env.ORDER_EMAIL.send(createOrderEmail(order));
+  await env.DB.prepare(
+    "UPDATE orders SET notification_sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?1"
+  ).bind(order.sessionId).run();
+  return true;
+}
+
 async function handleStripeWebhook(request, env) {
   if (!env.STRIPE_WEBHOOK_SECRET) {
     return json({ error: "STRIPE_WEBHOOK_SECRETが設定されていません。" }, 503);
@@ -285,24 +369,31 @@ async function handleStripeWebhook(request, env) {
   }
 
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-    if (!env.STRIPE_SECRET_KEY || !env.DB) {
+    if (!env.STRIPE_SECRET_KEY || !env.DB || !env.ORDER_EMAIL) {
       return json({ error: "注文保存の設定が不足しています。" }, 503);
     }
     const sessionId = event.data?.object?.id;
     if (!sessionId) return json({ error: "Checkout Session IDがありません。" }, 400);
 
-    const session = await retrieveCheckoutSession(sessionId, env.STRIPE_SECRET_KEY);
-    if (session.payment_status === "unpaid") {
-      return json({ received: true, saved: false });
+    try {
+      const session = await retrieveCheckoutSession(sessionId, env.STRIPE_SECRET_KEY);
+      if (session.payment_status === "unpaid") {
+        return json({ received: true, saved: false });
+      }
+      const order = normalizeOrder(event.id, session);
+      await saveOrder(env.DB, order);
+      const notificationSent = await notifyOrder(env, order);
+      console.log("Stripe checkout completed", JSON.stringify({
+        eventId: event.id,
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+        saved: true,
+        notificationSent
+      }));
+    } catch (error) {
+      console.error("Order processing failed", error?.code, error?.message);
+      return json({ error: "注文通知を処理できませんでした。" }, 500);
     }
-    const order = normalizeOrder(event.id, session);
-    await saveOrder(env.DB, order);
-    console.log("Stripe checkout completed", JSON.stringify({
-      eventId: event.id,
-      sessionId: session.id,
-      paymentStatus: session.payment_status,
-      saved: true
-    }));
   }
 
   return json({ received: true });

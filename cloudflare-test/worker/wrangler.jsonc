@@ -13,5 +13,14 @@
 			"database_name": "ccc-orders-test",
 			"database_id": "7b2e3569-2cc2-4dbf-aed2-ec4021829040"
 		}
+	],
+	"send_email": [
+		{
+			"name": "ORDER_EMAIL",
+			"destination_address": "chemicalcomputerclub@gmail.com",
+			"allowed_sender_addresses": [
+				"orders@chemicalcomputerclub.com"
+			]
+		}
 	]
 }

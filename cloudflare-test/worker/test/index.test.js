@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import worker, {
   createStripeParameters,
+  createOrderEmail,
   isAllowedOrigin,
   normalizeOrder,
   validateCart,
@@ -104,6 +105,30 @@ test("normalizes only the order fields needed for fulfillment", () => {
   assert.equal(order.shippingPostalCode, "1000001");
   assert.equal(order.items[0].description, "CCC Logo T — M");
   assert.equal(order.items[0].unitAmount, 4400);
+});
+
+test("builds a plain text and escaped HTML order notification", () => {
+  const email = createOrderEmail({
+    sessionId: "cs_test_123",
+    amountTotal: 2200,
+    paymentStatus: "paid",
+    customerName: "CCC <Member>",
+    customerEmail: "member@example.com",
+    customerPhone: null,
+    shippingName: "CCC Member",
+    shippingPostalCode: "1000001",
+    shippingState: "Tokyo",
+    shippingCity: "Chiyoda",
+    shippingLine1: "1-1",
+    shippingLine2: null,
+    items: [{ description: "CCC Mug", quantity: 1, amountTotal: 2200 }]
+  });
+
+  assert.equal(email.to, "chemicalcomputerclub@gmail.com");
+  assert.match(email.subject, /¥2,200/);
+  assert.match(email.text, /CCC Mug × 1/);
+  assert.match(email.html, /CCC &lt;Member&gt;/);
+  assert.doesNotMatch(email.html, /CCC <Member>/);
 });
 
 test("rejects an otherwise valid webhook when order storage is not configured", async () => {
