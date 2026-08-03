@@ -60,7 +60,7 @@
 
 @media (max-width:800px){.modal-media{display:flex;gap:10px;overflow-x:auto;padding:8px 15% 14px 8px;scroll-snap-type:x mandatory;scroll-padding-left:8px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;scrollbar-width:none}.modal-media::-webkit-scrollbar{display:none}.modal-media>img{flex:0 0 82%;width:82%;scroll-snap-align:start}.modal-gallery{display:contents}.modal-thumbnail{flex:0 0 82%;width:82%;scroll-snap-align:start}}
 
-@media (max-width:800px){.modal-thumbnail.is-primary{display:none}}
+@media (max-width:800px){.modal-thumbnail.is-primary{display:none}.modal-thumbnail,.modal-thumbnail:hover,.modal-thumbnail:focus-visible,.modal-thumbnail.is-active{border-color:transparent}}
 
 @media (max-width:800px){.about-tagline{margin-top:8px}.about .section-head{margin-bottom:30px}}
 
