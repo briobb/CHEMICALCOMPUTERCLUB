@@ -24,7 +24,7 @@ const PRODUCTS = Object.freeze({
   },
   patch: {
     name: "CCC Patch",
-    price: 100,
+    price: 1000,
     sizes: ["丸型", "四角型"]
   }
 });

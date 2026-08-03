@@ -78,11 +78,11 @@ test("accepts the CCC Sticker at 600 yen", () => {
   assert.equal(items[0].unitAmount, 600);
 });
 
-test("accepts both CCC Patch shapes at 100 yen", () => {
+test("accepts both CCC Patch shapes at 1000 yen", () => {
   const round = validateCart([{ productId: "patch", variant: "丸型", quantity: 1 }]);
   const square = validateCart([{ productId: "patch", variant: "四角型", quantity: 2 }]);
   assert.equal(round[0].name, "CCC Patch — 丸型");
-  assert.equal(round[0].unitAmount, 100);
+  assert.equal(round[0].unitAmount, 1000);
   assert.equal(square[0].name, "CCC Patch — 四角型");
   assert.equal(square[0].quantity, 2);
 });
