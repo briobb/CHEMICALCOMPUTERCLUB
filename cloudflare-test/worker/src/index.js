@@ -15,12 +15,14 @@ const PRODUCTS = Object.freeze({
   sox: {
     name: "CCC Sox",
     price: 2200,
+    available: false,
     sizes: ["S", "M", "L"],
     colors: ["Ivory", "Navy", "Orange"]
   },
   "test-item": {
     name: "CCC Sticker",
-    price: 600
+    price: 600,
+    available: false
   },
   patch: {
     name: "CCC Patch",
@@ -121,6 +123,7 @@ export function validateCart(items) {
   return items.map((item) => {
     const product = PRODUCTS[item?.productId];
     if (!product) throw new Error("存在しない商品が含まれています。");
+    if (product.available === false) throw new Error(`${product.name}は現在販売準備中です。`);
 
     const quantity = Number(item.quantity);
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_ITEM_QUANTITY) {

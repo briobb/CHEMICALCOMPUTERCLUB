@@ -36,17 +36,17 @@ test("allows configured site origins and local development", () => {
 test("validates a cart with product variations", () => {
   const items = validateCart([
     { productId: "logo-t", variant: "M", quantity: 2 },
-    { productId: "sox", variant: "L", color: "Orange", quantity: 1 },
+    { productId: "patch", variant: "丸型", quantity: 1 },
     { productId: "mug", quantity: 1 }
   ]);
   assert.equal(items[0].unitAmount, 4400);
-  assert.equal(items[1].name, "CCC Sox — Orange / L");
+  assert.equal(items[1].name, "CCC Patch — 丸型");
   assert.equal(items[2].unitAmount, 2200);
 });
 
 test("rejects a client-side price and invalid variation implicitly", () => {
   assert.throws(
-    () => validateCart([{ productId: "sox", variant: "XL", color: "Ivory", quantity: 1, price: 1 }]),
+    () => validateCart([{ productId: "logo-t", variant: "XXL", quantity: 1, price: 1 }]),
     /サイズが正しくありません/
   );
 });
@@ -72,10 +72,9 @@ test("builds production checkout return URLs", () => {
   assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
 });
 
-test("accepts the CCC Sticker at 600 yen", () => {
-  const items = validateCart([{ productId: "test-item", quantity: 1 }]);
-  assert.equal(items[0].name, "CCC Sticker");
-  assert.equal(items[0].unitAmount, 600);
+test("rejects coming soon products", () => {
+  assert.throws(() => validateCart([{ productId: "sox", variant: "M", color: "Ivory", quantity: 1 }]), /販売準備中/);
+  assert.throws(() => validateCart([{ productId: "test-item", quantity: 1 }]), /販売準備中/);
 });
 
 test("accepts both CCC Patch shapes at 1000 yen", () => {

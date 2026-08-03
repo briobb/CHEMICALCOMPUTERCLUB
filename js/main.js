@@ -30,6 +30,7 @@ const productVariant = document.querySelector('#product-variant');
 const colorLabel = document.querySelector('#color-label');
 const productColor = document.querySelector('#product-color');
 const productQuantity = document.querySelector('#product-quantity');
+const addToCartButton = document.querySelector('#add-to-cart');
 let lastTrigger;
 let currentProduct = null;
 
@@ -47,6 +48,9 @@ function openModal(trigger) {
     image: source.dataset.modalImage
   } : null;
   cartOptions.hidden = !currentProduct;
+  const isComingSoon = source.dataset.comingSoon === 'true';
+  addToCartButton.disabled = isComingSoon;
+  addToCartButton.textContent = isComingSoon ? 'Coming Soon' : 'Add to Cart';
   document.querySelector('#cart-feedback').textContent = '';
   productQuantity.value = '1';
   const variants = source.dataset.productVariants?.split(',').filter(Boolean) || [];
@@ -169,7 +173,7 @@ function saveAndRenderCart() {
     </article>`).join('');
 }
 
-document.querySelector('#add-to-cart').addEventListener('click', () => {
+addToCartButton.addEventListener('click', () => {
   if (!currentProduct) return;
   const quantity = Math.max(1, Math.min(20, Number.parseInt(productQuantity.value, 10) || 1));
   const variant = variantLabel.hidden ? '' : productVariant.value;
