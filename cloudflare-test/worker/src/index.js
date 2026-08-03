@@ -19,8 +19,8 @@ const PRODUCTS = Object.freeze({
     colors: ["Ivory", "Navy", "Orange"]
   },
   "test-item": {
-    name: "Test Item",
-    price: 100
+    name: "CCC Sticker",
+    price: 600
   }
 });
 

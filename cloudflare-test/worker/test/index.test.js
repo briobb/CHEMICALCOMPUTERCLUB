@@ -72,10 +72,10 @@ test("builds production checkout return URLs", () => {
   assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
 });
 
-test("accepts the production checkout test item at 100 yen", () => {
+test("accepts the CCC Sticker at 600 yen", () => {
   const items = validateCart([{ productId: "test-item", quantity: 1 }]);
-  assert.equal(items[0].name, "Test Item");
-  assert.equal(items[0].unitAmount, 100);
+  assert.equal(items[0].name, "CCC Sticker");
+  assert.equal(items[0].unitAmount, 600);
 });
 
 test("verifies a current Stripe webhook signature", async () => {
