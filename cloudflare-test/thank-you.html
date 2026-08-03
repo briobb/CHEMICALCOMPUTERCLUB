@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Thank You | Chemical Computer Club</title>
+  <link rel="stylesheet" href="./site-test.css?v=3">
+</head>
+<body class="thank-you-page">
+  <header class="thank-you-header">
+    <a class="brand" href="./index-cart-test.html" aria-label="CCCトップへ戻る">
+      <img src="../images/ccc_logo.png" alt="Chemical Computer Club">
+    </a>
+  </header>
+
+  <main class="thank-you-main">
+    <section class="thank-you-card" aria-labelledby="thank-you-title">
+      <p class="eyebrow"><span class="signal"></span>CCC / ORDER COMPLETE</p>
+      <h1 id="thank-you-title">Thank you.</h1>
+      <p class="thank-you-lead">ご注文ありがとうございます。</p>
+      <p>決済が正常に完了しました。<br>CCCのアイテムを手にした日から、あなたもクラブ員です。</p>
+      <a class="button" href="./index-cart-test.html">CCC TOPへ戻る <span aria-hidden="true">→</span></a>
+    </section>
+  </main>
+
+  <footer class="thank-you-footer">
+    <p class="mono">© 2026 CHEMICAL COMPUTER CLUB</p>
+  </footer>
+
+  <script>
+    if (new URLSearchParams(window.location.search).has('session_id')) {
+      localStorage.removeItem('ccc-modal-cart-test');
+    }
+  </script>
+</body>
+</html>

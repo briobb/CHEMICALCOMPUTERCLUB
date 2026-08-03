@@ -66,3 +66,7 @@
 @media (max-width:800px){.site-header{gap:10px}.header-cart{margin-left:auto}.site-nav+.header-cart{display:block}.cart-line{grid-template-columns:64px 1fr}.cart-line img{width:64px;height:64px}.cart-line-controls{grid-column:1/-1;justify-content:flex-end}.cart-dialog-actions{flex-direction:column}.cart-dialog-actions .button{width:100%}}
 
 .cart-options label[hidden]{display:none}
+
+/* Checkout completion page */
+.thank-you-page{min-height:100svh;display:grid;grid-template-rows:auto 1fr auto}.thank-you-header{height:88px;display:flex;align-items:center;padding:0 var(--pad);border-bottom:1px solid var(--graphite)}.thank-you-main{display:grid;place-items:center;padding:clamp(56px,9vw,120px) var(--pad)}.thank-you-card{width:min(860px,100%);padding:clamp(36px,7vw,90px);border:1px solid var(--graphite);background:var(--paper)}.thank-you-card h1{margin:24px 0;font-size:clamp(58px,10vw,138px);line-height:.82;letter-spacing:-.065em}.thank-you-lead{margin:38px 0 10px;font-size:clamp(20px,2.5vw,32px)}.thank-you-card .button{gap:28px;margin-top:38px}.thank-you-footer{padding:22px var(--pad);border-top:1px solid var(--graphite)}.thank-you-footer p{margin:0}
+@media (max-width:800px){.thank-you-header{height:72px}.thank-you-card h1{line-height:.88}.thank-you-card .button{width:100%}}

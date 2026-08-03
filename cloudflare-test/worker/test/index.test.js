@@ -33,5 +33,8 @@ test("builds Stripe Checkout line item parameters", () => {
   const params = createStripeParameters(items, "https://example.com");
   assert.equal(params.get("line_items[0][price_data][unit_amount]"), "2200");
   assert.equal(params.get("line_items[0][quantity]"), "2");
-  assert.match(params.get("success_url"), /checkout=success/);
+  assert.equal(
+    params.get("success_url"),
+    "https://example.com/cloudflare-test/thank-you.html?session_id={CHECKOUT_SESSION_ID}"
+  );
 });

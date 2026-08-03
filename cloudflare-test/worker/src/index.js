@@ -101,7 +101,7 @@ export function createStripeParameters(items, siteUrl) {
   const params = new URLSearchParams();
   params.set("mode", "payment");
   params.set("locale", "ja");
-  params.set("success_url", `${siteUrl}/cloudflare-test/index-cart-test.html?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
+  params.set("success_url", `${siteUrl}/cloudflare-test/thank-you.html?session_id={CHECKOUT_SESSION_ID}`);
   params.set("cancel_url", `${siteUrl}/cloudflare-test/index-cart-test.html?checkout=cancelled`);
   params.set("shipping_address_collection[allowed_countries][0]", "JP");
 
