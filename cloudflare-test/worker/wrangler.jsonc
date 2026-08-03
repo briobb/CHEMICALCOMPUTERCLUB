@@ -1,10 +1,17 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ccc-checkout-test",
-  "main": "src/index.js",
-  "compatibility_date": "2026-08-02",
-  "vars": {
-    "SITE_URL": "https://chemicalcomputerclub.com",
-    "ALLOWED_ORIGIN": "https://chemicalcomputerclub.com,http://chemicalcomputerclub.com,https://briobb.github.io"
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "ccc-checkout-test",
+	"main": "src/index.js",
+	"compatibility_date": "2026-08-02",
+	"vars": {
+		"SITE_URL": "https://chemicalcomputerclub.com",
+		"ALLOWED_ORIGIN": "https://chemicalcomputerclub.com,http://chemicalcomputerclub.com,https://briobb.github.io"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "ccc-orders-test",
+			"database_id": "7b2e3569-2cc2-4dbf-aed2-ec4021829040"
+		}
+	]
 }

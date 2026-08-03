@@ -187,6 +187,85 @@ async function createCheckoutSession(request, env, cors) {
   return json({ url: stripeData.url }, 200, cors);
 }
 
+async function retrieveCheckoutSession(sessionId, secretKey) {
+  const params = new URLSearchParams();
+  params.append("expand[]", "line_items.data.price");
+  const response = await fetch(
+    `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}?${params}`,
+    { headers: { authorization: `Bearer ${secretKey}` } }
+  );
+  const session = await response.json();
+  if (!response.ok || !session?.id) {
+    console.error("Stripe Checkout retrieve error", session?.error?.type, session?.error?.code);
+    throw new Error("Checkout Sessionを取得できませんでした。");
+  }
+  return session;
+}
+
+export function normalizeOrder(eventId, session) {
+  const customer = session.customer_details || {};
+  const shipping = session.collected_information?.shipping_details || session.shipping_details || {};
+  const address = shipping.address || {};
+  const items = (session.line_items?.data || []).map((item, lineIndex) => ({
+    lineIndex,
+    description: normalizeText(item.description) || "Item",
+    quantity: Number(item.quantity) || 0,
+    unitAmount: Number.isInteger(item.price?.unit_amount) ? item.price.unit_amount : null,
+    amountTotal: Number(item.amount_total) || 0,
+    currency: normalizeText(item.currency || session.currency).toLowerCase()
+  }));
+
+  return {
+    sessionId: session.id,
+    eventId,
+    stripeCreatedAt: Number(session.created) || 0,
+    amountTotal: Number(session.amount_total) || 0,
+    currency: normalizeText(session.currency).toLowerCase(),
+    paymentStatus: normalizeText(session.payment_status),
+    customerEmail: normalizeText(customer.email) || null,
+    customerName: normalizeText(customer.name) || null,
+    customerPhone: normalizeText(customer.phone) || null,
+    shippingName: normalizeText(shipping.name) || null,
+    shippingCountry: normalizeText(address.country) || null,
+    shippingPostalCode: normalizeText(address.postal_code) || null,
+    shippingState: normalizeText(address.state) || null,
+    shippingCity: normalizeText(address.city) || null,
+    shippingLine1: normalizeText(address.line1) || null,
+    shippingLine2: normalizeText(address.line2) || null,
+    items
+  };
+}
+
+async function saveOrder(db, order) {
+  const statements = [
+    db.prepare(`
+      INSERT INTO orders (
+        session_id, event_id, stripe_created_at, amount_total, currency, payment_status,
+        customer_email, customer_name, customer_phone, shipping_name, shipping_country,
+        shipping_postal_code, shipping_state, shipping_city, shipping_line1, shipping_line2
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)
+      ON CONFLICT(session_id) DO UPDATE SET
+        event_id = excluded.event_id,
+        payment_status = excluded.payment_status,
+        updated_at = CURRENT_TIMESTAMP
+    `).bind(
+      order.sessionId, order.eventId, order.stripeCreatedAt, order.amountTotal, order.currency,
+      order.paymentStatus, order.customerEmail, order.customerName, order.customerPhone,
+      order.shippingName, order.shippingCountry, order.shippingPostalCode, order.shippingState,
+      order.shippingCity, order.shippingLine1, order.shippingLine2
+    ),
+    ...order.items.map((item) => db.prepare(`
+      INSERT OR IGNORE INTO order_items (
+        session_id, line_index, description, quantity, unit_amount, amount_total, currency
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+    `).bind(
+      order.sessionId, item.lineIndex, item.description, item.quantity,
+      item.unitAmount, item.amountTotal, item.currency
+    ))
+  ];
+  await db.batch(statements);
+}
+
 async function handleStripeWebhook(request, env) {
   if (!env.STRIPE_WEBHOOK_SECRET) {
     return json({ error: "STRIPE_WEBHOOK_SECRETが設定されていません。" }, 503);
@@ -206,11 +285,23 @@ async function handleStripeWebhook(request, env) {
   }
 
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-    const session = event.data?.object;
+    if (!env.STRIPE_SECRET_KEY || !env.DB) {
+      return json({ error: "注文保存の設定が不足しています。" }, 503);
+    }
+    const sessionId = event.data?.object?.id;
+    if (!sessionId) return json({ error: "Checkout Session IDがありません。" }, 400);
+
+    const session = await retrieveCheckoutSession(sessionId, env.STRIPE_SECRET_KEY);
+    if (session.payment_status === "unpaid") {
+      return json({ received: true, saved: false });
+    }
+    const order = normalizeOrder(event.id, session);
+    await saveOrder(env.DB, order);
     console.log("Stripe checkout completed", JSON.stringify({
       eventId: event.id,
-      sessionId: session?.id,
-      paymentStatus: session?.payment_status
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+      saved: true
     }));
   }
 

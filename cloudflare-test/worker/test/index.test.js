@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import worker, {
   createStripeParameters,
   isAllowedOrigin,
+  normalizeOrder,
   validateCart,
   verifyStripeSignature
 } from "../src/index.js";
@@ -80,7 +81,32 @@ test("verifies a current Stripe webhook signature", async () => {
   );
 });
 
-test("accepts a signed checkout completion webhook", async () => {
+test("normalizes only the order fields needed for fulfillment", () => {
+  const order = normalizeOrder("evt_test", {
+    id: "cs_test_123",
+    created: 1_800_000_000,
+    amount_total: 4400,
+    currency: "jpy",
+    payment_status: "paid",
+    customer_details: { email: "member@example.com", name: "CCC Member", phone: "09000000000" },
+    collected_information: {
+      shipping_details: {
+        name: "CCC Member",
+        address: { country: "JP", postal_code: "1000001", state: "Tokyo", city: "Chiyoda", line1: "1-1" }
+      }
+    },
+    line_items: {
+      data: [{ description: "CCC Logo T — M", quantity: 1, amount_total: 4400, currency: "jpy", price: { unit_amount: 4400 } }]
+    }
+  });
+
+  assert.equal(order.sessionId, "cs_test_123");
+  assert.equal(order.shippingPostalCode, "1000001");
+  assert.equal(order.items[0].description, "CCC Logo T — M");
+  assert.equal(order.items[0].unitAmount, 4400);
+});
+
+test("rejects an otherwise valid webhook when order storage is not configured", async () => {
   const timestamp = Math.floor(Date.now() / 1000);
   const secret = "whsec_test_secret";
   const payload = JSON.stringify({
@@ -96,6 +122,6 @@ test("accepts a signed checkout completion webhook", async () => {
   });
   const response = await worker.fetch(request, { STRIPE_WEBHOOK_SECRET: secret });
 
-  assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { received: true });
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "注文保存の設定が不足しています。" });
 });
