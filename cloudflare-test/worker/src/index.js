@@ -21,8 +21,7 @@ const PRODUCTS = Object.freeze({
   },
   "test-item": {
     name: "CCC Sticker",
-    price: 600,
-    available: false
+    price: 600
   },
   patch: {
     name: "CCC Patch",

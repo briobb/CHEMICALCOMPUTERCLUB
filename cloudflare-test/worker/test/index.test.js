@@ -74,7 +74,12 @@ test("builds production checkout return URLs", () => {
 
 test("rejects coming soon products", () => {
   assert.throws(() => validateCart([{ productId: "sox", variant: "M", color: "Ivory", quantity: 1 }]), /販売準備中/);
-  assert.throws(() => validateCart([{ productId: "test-item", quantity: 1 }]), /販売準備中/);
+});
+
+test("accepts the CCC Sticker at 600 yen", () => {
+  const items = validateCart([{ productId: "test-item", quantity: 1 }]);
+  assert.equal(items[0].name, "CCC Sticker");
+  assert.equal(items[0].unitAmount, 600);
 });
 
 test("accepts both CCC Patch shapes at 1000 yen", () => {
