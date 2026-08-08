@@ -91,6 +91,13 @@ test("accepts both CCC Patch shapes at 1000 yen", () => {
   assert.equal(square[0].quantity, 2);
 });
 
+test("accepts CCC Club T sizes at 4400 yen", () => {
+  const items = validateCart([{ productId: "club-t", variant: "XL", quantity: 2 }]);
+  assert.equal(items[0].name, "CCC Club T — XL");
+  assert.equal(items[0].unitAmount, 4400);
+  assert.equal(items[0].quantity, 2);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";

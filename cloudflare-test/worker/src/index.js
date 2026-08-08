@@ -27,6 +27,11 @@ const PRODUCTS = Object.freeze({
     name: "CCC Patch",
     price: 1000,
     sizes: ["丸型", "四角型"]
+  },
+  "club-t": {
+    name: "CCC Club T",
+    price: 4400,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
