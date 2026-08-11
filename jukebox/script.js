@@ -2,7 +2,6 @@ const form = document.querySelector("#request-form");
 const successPanel = document.querySelector("#success-panel");
 const submitButton = document.querySelector("#submit-button");
 const buttonLabel = submitButton.querySelector(".button-label");
-const anotherButton = document.querySelector("#another-button");
 const errorMessage = document.querySelector("#form-error");
 const songInput = document.querySelector("#song");
 const artistInput = document.querySelector("#artist");
@@ -61,19 +60,12 @@ form.addEventListener("submit", async (event) => {
     form.hidden = true;
     successPanel.hidden = false;
     successPanel.focus();
+    window.setTimeout(() => {
+      window.location.assign("/");
+    }, 1000);
   } catch {
     setError("COULD NOT SEND. PLEASE TRY AGAIN.");
   } finally {
     setSending(false);
   }
-});
-
-anotherButton.addEventListener("click", () => {
-  form.reset();
-  setError("");
-  songInput.removeAttribute("aria-invalid");
-  artistInput.removeAttribute("aria-invalid");
-  successPanel.hidden = true;
-  form.hidden = false;
-  songInput.focus();
 });
