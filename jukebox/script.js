@@ -45,7 +45,7 @@ form.addEventListener("submit", async (event) => {
   setSending(true);
 
   try {
-    const response = await fetch("/api/request", {
+    const response = await fetch("https://jukebox-api.chemicalcomputerclub.com/request", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
