@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#180c09">
+    <meta name="description" content="CCC DJイベントの曲リクエスト受付">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>CCC JUKEBOX — Song Request</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <main class="stage">
+      <section class="jukebox" aria-labelledby="page-title">
+        <div class="arch" aria-hidden="true">
+          <span class="arch-line arch-line--outer"></span>
+          <span class="arch-line arch-line--inner"></span>
+          <span class="glow-dot glow-dot--one"></span>
+          <span class="glow-dot glow-dot--two"></span>
+          <span class="glow-dot glow-dot--three"></span>
+          <span class="glow-dot glow-dot--four"></span>
+        </div>
+
+        <header class="brand">
+          <p class="brand__eyebrow"><span>★</span> MUSIC FOR THE NIGHT <span>★</span></p>
+          <h1 id="page-title"><span>CCC</span> JUKEBOX</h1>
+          <div class="brand__rule" aria-hidden="true"><i></i><b>♪</b><i></i></div>
+          <p class="brand__subtitle">SONG REQUEST</p>
+        </header>
+
+        <div class="panel">
+          <form id="request-form" novalidate>
+            <div class="field">
+              <label for="song">SONG TITLE <span>/ 曲名</span></label>
+              <input id="song" name="song" type="text" maxlength="100" autocomplete="off" placeholder="e.g. September" required>
+            </div>
+
+            <div class="field">
+              <label for="artist">ARTIST <span>/ アーティスト名</span></label>
+              <input id="artist" name="artist" type="text" maxlength="100" autocomplete="off" placeholder="e.g. Earth, Wind &amp; Fire" required>
+            </div>
+
+            <div class="field">
+              <label for="name">YOUR NAME <span>/ ニックネーム（任意）</span></label>
+              <input id="name" name="name" type="text" maxlength="40" autocomplete="nickname" placeholder="Guest">
+            </div>
+
+            <p id="form-error" class="form-error" role="alert" aria-live="polite"></p>
+            <button id="submit-button" class="action-button" type="submit">
+              <span aria-hidden="true">♪</span> <span class="button-label">SEND REQUEST</span>
+            </button>
+          </form>
+
+          <section id="success-panel" class="success-panel" aria-labelledby="success-title" tabindex="-1" hidden>
+            <div class="record" aria-hidden="true"><span>CCC</span></div>
+            <p class="success-panel__kicker">NOW IN THE QUEUE</p>
+            <h2 id="success-title">YOUR REQUEST<br>IS IN!</h2>
+            <p>Stay tuned.</p>
+            <button id="another-button" class="action-button action-button--secondary" type="button">REQUEST ANOTHER SONG</button>
+          </section>
+        </div>
+
+        <footer>
+          <span aria-hidden="true">◆</span> CCC MUSIC SERVICE <span aria-hidden="true">◆</span>
+        </footer>
+      </section>
+    </main>
+  </body>
+</html>
