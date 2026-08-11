@@ -14,7 +14,7 @@
 
 * { box-sizing: border-box; }
 
-html { min-height: 100%; background: #130907; }
+html { min-height: 100%; background: #f3f0e8; }
 
 body {
   min-width: 320px;
@@ -22,10 +22,7 @@ body {
   margin: 0;
   color: var(--cream);
   font-family: "Oswald", "Arial Narrow", sans-serif;
-  background:
-    radial-gradient(circle at 50% 14%, rgba(156, 43, 27, .25), transparent 34rem),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
-    #130907;
+  background: #f3f0e8;
 }
 
 button, input { font: inherit; }
