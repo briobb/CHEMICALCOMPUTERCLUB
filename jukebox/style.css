@@ -155,27 +155,21 @@ h1 span { color: #d84b34; text-shadow: 1px 2px 0 #f1b75e, 0 3px 0 #330a08; }
 
 .success-panel { min-height: 406px; padding-top: 8px; text-align: center; }
 .success-panel[hidden] { display: none; }
-.record {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 112px;
-  height: 112px;
-  margin: 0 auto 18px;
-  border-radius: 50%;
-  background: repeating-radial-gradient(circle, #19110e 0 3px, #32251e 4px 5px, #130d0b 6px 8px);
-  box-shadow: 0 5px 10px rgba(45,22,9,.3);
-  animation: spin 12s linear infinite;
-}
-.record::before { content: ""; position: absolute; width: 40px; height: 40px; border-radius: 50%; background: var(--red); border: 2px solid var(--gold); }
-.record span { position: relative; z-index: 1; color: var(--paper); font-size: .55rem; letter-spacing: .08em; }
 .success-panel__kicker { margin: 0 0 6px; color: var(--red); font-size: .7rem; letter-spacing: .2em; }
 .success-panel h2 { margin: 0; color: var(--red-dark); font-family: "Rye", Georgia, serif; font-size: 2rem; font-weight: 400; line-height: 1.2; }
 .success-panel > p:last-of-type { margin: 10px 0 0; color: #66523c; font-family: Georgia, serif; font-style: italic; }
+.paypay-qr {
+  display: block;
+  width: min(100%, 250px);
+  height: auto;
+  margin: 18px auto 0;
+  border: 3px solid var(--gold);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 5px 14px rgba(45,22,9,.28);
+}
 
 footer { padding-top: 17px; color: #c89f57; font-size: .63rem; letter-spacing: .19em; text-align: center; }
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 360px) {
   .jukebox { padding-inline: 12px; }

@@ -60,9 +60,6 @@ form.addEventListener("submit", async (event) => {
     form.hidden = true;
     successPanel.hidden = false;
     successPanel.focus();
-    window.setTimeout(() => {
-      window.location.assign("/");
-    }, 1000);
   } catch {
     setError("COULD NOT SEND. PLEASE TRY AGAIN.");
   } finally {
