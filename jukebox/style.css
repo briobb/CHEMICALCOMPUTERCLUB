@@ -161,12 +161,13 @@ h1 span { color: #d84b34; text-shadow: 1px 2px 0 #f1b75e, 0 3px 0 #330a08; }
 .success-panel[hidden] { display: none; }
 .success-panel__kicker { margin: 0 0 6px; color: var(--red); font-size: .7rem; letter-spacing: .2em; }
 .success-panel h2 { margin: 0; color: var(--red-dark); font-family: "Rye", Georgia, serif; font-size: 2rem; font-weight: 400; line-height: 1.2; }
-.success-panel > p:last-of-type { margin: 10px 0 0; color: #66523c; font-family: Georgia, serif; font-style: italic; }
+.success-panel__stay-tuned { margin: 10px 0 0; color: #66523c; font-family: Georgia, serif; font-style: italic; }
+.success-panel__tip { margin: 14px 0 0; color: var(--red-dark); font-size: .88rem; font-weight: 600; letter-spacing: .02em; }
 .paypay-qr {
   display: block;
   width: min(100%, 250px);
   height: auto;
-  margin: 18px auto 0;
+  margin: 12px auto 0;
   border: 3px solid var(--gold);
   border-radius: 8px;
   background: #fff;
