@@ -80,6 +80,7 @@ async function handleSongRequest(request, env, cors) {
   const song = cleanText(body.song, 100);
   const artist = cleanText(body.artist, 100);
   const name = cleanText(body.name, 40) || "Guest";
+  const message = cleanText(body.message, 200);
   if (!song || !artist) {
     return jsonResponse({ success: false, message: "Song and artist are required." }, 400, cors);
   }
@@ -95,15 +96,16 @@ async function handleSongRequest(request, env, cors) {
     minute: "2-digit",
     hour12: true
   }).format(new Date());
-  const text = [
+  const textLines = [
     "🎵 NEW SONG REQUEST",
     "",
     `Song: ${song}`,
     `Artist: ${artist}`,
-    `From: ${name}`,
-    "",
-    time
-  ].join("\n");
+    `From: ${name}`
+  ];
+  if (message) textLines.push(`Message: ${message}`);
+  textLines.push("", time);
+  const text = textLines.join("\n");
 
   try {
     const lineResponse = await fetch(LINE_PUSH_URL, {

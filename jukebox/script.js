@@ -6,6 +6,7 @@ const errorMessage = document.querySelector("#form-error");
 const songInput = document.querySelector("#song");
 const artistInput = document.querySelector("#artist");
 const nameInput = document.querySelector("#name");
+const messageInput = document.querySelector("#message");
 
 function setError(message) {
   errorMessage.textContent = message;
@@ -50,7 +51,8 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify({
         song: songInput.value.trim(),
         artist: artistInput.value.trim(),
-        name: nameInput.value.trim()
+        name: nameInput.value.trim(),
+        message: messageInput.value.trim()
       })
     });
 

@@ -54,7 +54,8 @@ test("sends one LINE push to the configured DJ and defaults to Guest", async (t)
   const response = await worker.fetch(request({
     song: "September",
     artist: "Earth, Wind & Fire",
-    name: ""
+    name: "",
+    message: "Please play this next!"
   }), env);
 
   assert.equal(response.status, 200);
@@ -64,6 +65,26 @@ test("sends one LINE push to the configured DJ and defaults to Guest", async (t)
   assert.equal(payload.to, env.LINE_USER_ID);
   assert.equal(payload.messages.length, 1);
   assert.match(payload.messages[0].text, /From: Guest/);
+  assert.match(payload.messages[0].text, /Message: Please play this next!/);
+});
+
+test("omits the optional message line when it is empty", async (t) => {
+  let outbound;
+  t.mock.method(globalThis, "fetch", async (url, init) => {
+    outbound = { url, init };
+    return new Response("{}", { status: 200 });
+  });
+
+  const response = await worker.fetch(request({
+    song: "Dancing Queen",
+    artist: "ABBA",
+    name: "Yuki",
+    message: ""
+  }), env);
+
+  assert.equal(response.status, 200);
+  const payload = JSON.parse(outbound.init.body);
+  assert.doesNotMatch(payload.messages[0].text, /Message:/);
 });
 
 test("does not expose LINE API errors", async (t) => {

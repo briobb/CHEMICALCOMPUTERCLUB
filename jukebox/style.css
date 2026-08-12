@@ -25,7 +25,7 @@ body {
   background: #f3f0e8;
 }
 
-button, input { font: inherit; }
+button, input, textarea { font: inherit; }
 
 .stage {
   min-height: 100svh;
@@ -112,7 +112,8 @@ h1 span { color: #d84b34; text-shadow: 1px 2px 0 #f1b75e, 0 3px 0 #330a08; }
 .field label span { font-size: .72rem; letter-spacing: .02em; }
 .field label small { float: right; padding-top: 3px; color: #796950; font-size: .6rem; letter-spacing: .12em; }
 
-.field input {
+.field input,
+.field textarea {
   width: 100%;
   min-height: 52px;
   border: 1px solid #805e39;
@@ -125,8 +126,11 @@ h1 span { color: #d84b34; text-shadow: 1px 2px 0 #f1b75e, 0 3px 0 #330a08; }
   box-shadow: inset 0 2px 4px rgba(74,39,15,.16);
   transition: border-color .15s, box-shadow .15s;
 }
-.field input::placeholder { color: #927f67; opacity: 1; }
-.field input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(143,31,29,.2), inset 0 2px 4px rgba(74,39,15,.12); }
+.field textarea { min-height: 82px; resize: vertical; }
+.field input::placeholder,
+.field textarea::placeholder { color: #927f67; opacity: 1; }
+.field input:focus,
+.field textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(143,31,29,.2), inset 0 2px 4px rgba(74,39,15,.12); }
 .field input[aria-invalid="true"] { border-color: #a21c17; background: #fff0dd; }
 
 .form-error { min-height: 21px; margin: -4px 0 8px; color: #8f1612; font-size: .82rem; font-weight: 700; letter-spacing: .045em; text-align: center; }
