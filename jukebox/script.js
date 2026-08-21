@@ -8,6 +8,7 @@ const artistInput = document.querySelector("#artist");
 const nameInput = document.querySelector("#name");
 const messageInput = document.querySelector("#message");
 const requestAnotherButton = document.querySelector("#request-another-button");
+const paypayButton = document.querySelector("#paypay-button");
 
 function setError(message) {
   errorMessage.textContent = message;
@@ -42,6 +43,20 @@ requestAnotherButton.addEventListener("click", () => {
   form.hidden = false;
   songInput.focus();
   form.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+paypayButton.addEventListener("click", () => {
+  const paypayWindow = window.open(paypayButton.dataset.paypayUrl, "ccc-paypay");
+
+  if (!paypayWindow) {
+    window.location.assign(paypayButton.dataset.paypayUrl);
+    return;
+  }
+
+  window.setTimeout(() => {
+    paypayWindow.close();
+    window.focus();
+  }, 3000);
 });
 
 form.addEventListener("submit", async (event) => {
