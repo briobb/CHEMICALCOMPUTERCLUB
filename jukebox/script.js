@@ -7,6 +7,7 @@ const songInput = document.querySelector("#song");
 const artistInput = document.querySelector("#artist");
 const nameInput = document.querySelector("#name");
 const messageInput = document.querySelector("#message");
+const requestAnotherButton = document.querySelector("#request-another-button");
 
 function setError(message) {
   errorMessage.textContent = message;
@@ -30,6 +31,17 @@ function setSending(isSending) {
     input.removeAttribute("aria-invalid");
     if (songInput.value.trim() && artistInput.value.trim()) setError("");
   });
+});
+
+requestAnotherButton.addEventListener("click", () => {
+  form.reset();
+  songInput.removeAttribute("aria-invalid");
+  artistInput.removeAttribute("aria-invalid");
+  setError("");
+  successPanel.hidden = true;
+  form.hidden = false;
+  songInput.focus();
+  form.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 form.addEventListener("submit", async (event) => {

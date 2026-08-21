@@ -167,7 +167,8 @@ h1 span { color: #d84b34; text-shadow: 1px 2px 0 #f1b75e, 0 3px 0 #330a08; }
 .success-panel__stay-tuned { margin: 10px 0 0; color: #66523c; font-family: Georgia, serif; font-style: italic; }
 .success-panel__tip { margin: 14px 0 0; color: var(--red-dark); font-size: .88rem; font-weight: 600; letter-spacing: .02em; }
 .success-panel__tip-button { margin-top: 14px; }
-.success-panel__home-button { margin-top: 18px; font-size: .95rem; }
+.success-panel__another-button { margin-top: 18px; }
+.success-panel__home-button { margin-top: 14px; font-size: .95rem; }
 
 footer { padding-top: 17px; color: #c89f57; font-size: .63rem; letter-spacing: .19em; text-align: center; }
 
