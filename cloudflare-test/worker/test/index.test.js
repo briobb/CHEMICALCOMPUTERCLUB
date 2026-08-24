@@ -98,6 +98,13 @@ test("accepts CCC Club T sizes at 4400 yen", () => {
   assert.equal(items[0].quantity, 2);
 });
 
+test("accepts the CCC Key Holder at 1000 yen without variations", () => {
+  const items = validateCart([{ productId: "key-holder", quantity: 2 }]);
+  assert.equal(items[0].name, "CCC Key Holder");
+  assert.equal(items[0].unitAmount, 1000);
+  assert.equal(items[0].quantity, 2);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";

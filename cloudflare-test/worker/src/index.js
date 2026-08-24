@@ -32,6 +32,10 @@ const PRODUCTS = Object.freeze({
     name: "CCC Club T",
     price: 4400,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "key-holder": {
+    name: "CCC Key Holder",
+    price: 1000
   }
 });
 
