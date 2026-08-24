@@ -36,6 +36,11 @@ const PRODUCTS = Object.freeze({
   "key-holder": {
     name: "CCC Key Holder",
     price: 1000
+  },
+  "melt-t": {
+    name: "CCC Melt T",
+    price: 5500,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
