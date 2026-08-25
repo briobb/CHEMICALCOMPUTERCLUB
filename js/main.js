@@ -24,6 +24,7 @@ const modalPrice = document.querySelector('#modal-price');
 const modalImage = document.querySelector('#modal-image');
 const modalMedia = document.querySelector('#modal-media');
 const modalGallery = document.querySelector('#modal-gallery');
+const modalExternalLink = document.querySelector('#modal-external-link');
 const cartOptions = document.querySelector('#cart-options');
 const variantLabel = document.querySelector('#variant-label');
 const productVariant = document.querySelector('#product-variant');
@@ -41,6 +42,10 @@ function openModal(trigger) {
   modalCopy.textContent = source.dataset.modalCopy;
   modalPrice.textContent = source.dataset.modalPrice ? `¥${source.dataset.modalPrice}` : '';
   modalPrice.hidden = !source.dataset.modalPrice;
+  if (modalExternalLink) {
+    modalExternalLink.href = source.dataset.modalUrl || '#';
+    modalExternalLink.hidden = !source.dataset.modalUrl;
+  }
   currentProduct = source.dataset.productId ? {
     id: source.dataset.productId,
     name: source.dataset.modalTitle,

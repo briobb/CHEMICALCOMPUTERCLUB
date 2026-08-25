@@ -15,7 +15,7 @@
 .hero-visual::after{background:rgba(43,43,43,.4)}
 @media (max-width:800px){.hero-visual::after{background:rgba(43,43,43,.48)}}
 
-.modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}.modal-actions .button{margin-top:0}.button-secondary{background:transparent;color:var(--graphite);border-color:var(--graphite)}.button-secondary:hover{background:var(--graphite);color:var(--ivory);border-color:var(--graphite)}
+.modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}.modal-actions .button{margin-top:0}.modal-actions #modal-external-link[hidden]{display:none}.button-secondary{background:transparent;color:var(--graphite);border-color:var(--graphite)}.button-secondary:hover{background:var(--graphite);color:var(--ivory);border-color:var(--graphite)}
 
 /* Keep the membership message on the page's true center axis. */
 .join-strip{grid-template-columns:1fr auto 1fr}.join-strip>p:nth-child(2){text-align:center}.join-strip>.button{justify-self:end}
