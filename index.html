@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Chemical Computer Club — 化学とコンピューターで、暮らしをもっと豊かに。">
   <title>Chemical Computer Club</title>
-  <link rel="stylesheet" href="css/style.css?v=20260825-1">
+  <link rel="preload" as="image" href="images/photo01-hero.jpg" media="(min-width: 801px)" fetchpriority="high">
+  <link rel="preload" as="image" href="images/photo01-hero-mobile.jpg" media="(max-width: 800px)" fetchpriority="high">
+  <link rel="stylesheet" href="css/style.css?v=20260918-1">
   <script src="js/main.js?v=20260825-1" defer></script>
 </head>
 <body>
@@ -30,7 +32,10 @@
         <p class="mono">Welcome to the club for all Nerds &amp; Geeks.</p>
       </div>
       <figure class="hero-visual reveal">
-        <img src="images/photo01.png" alt="野外で活動するChemical Computer Clubのイメージ">
+        <picture>
+          <source media="(max-width: 800px)" srcset="images/photo01-hero-mobile.jpg">
+          <img src="images/photo01-hero.jpg" width="1080" height="432" fetchpriority="high" decoding="async" alt="野外で活動するChemical Computer Clubのイメージ">
+        </picture>
         <figcaption><span>FIELD RECORD 001</span><span>35.6812° N / 139.7671° E</span></figcaption>
       </figure>
       <a class="scroll-cue" href="#about">Scroll to explore <span aria-hidden="true">↓</span></a>
