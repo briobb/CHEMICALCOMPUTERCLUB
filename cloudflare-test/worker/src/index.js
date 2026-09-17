@@ -40,6 +40,11 @@ const PRODUCTS = Object.freeze({
     name: "CCC Melt T",
     price: 5500,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "everyday-wonder-t": {
+    name: "EverydayWonder T",
+    price: 4400,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
