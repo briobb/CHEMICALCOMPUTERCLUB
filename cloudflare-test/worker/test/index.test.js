@@ -72,10 +72,15 @@ test("builds production checkout return URLs", () => {
   assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
 });
 
-test("accepts CCC Sox at 2200 yen with size and color", () => {
-  const items = validateCart([{ productId: "sox", variant: "M", color: "Ivory", quantity: 1 }]);
-  assert.equal(items[0].name, "CCC Sox — Ivory / M");
+test("accepts CCC Sox at 2200 yen with color and no size", () => {
+  const items = validateCart([{ productId: "sox", color: "イエロー", quantity: 1 }]);
+  assert.equal(items[0].name, "CCC Sox — イエロー");
   assert.equal(items[0].unitAmount, 2200);
+  assert.equal(items[0].size, "");
+  assert.throws(
+    () => validateCart([{ productId: "sox", variant: "M", color: "レッド", quantity: 1 }]),
+    /サイズ指定がありません/
+  );
 });
 
 test("accepts the CCC Sticker at 600 yen", () => {
