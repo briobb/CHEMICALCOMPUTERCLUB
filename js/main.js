@@ -38,7 +38,7 @@ let currentProduct = null;
 function openModal(trigger) {
   const source = trigger.closest('[data-modal-title]');
   lastTrigger = trigger;
-  detailModal.dataset.productId = source.dataset.productId || '';
+  modal.dataset.productId = source.dataset.productId || '';
   modalTitle.textContent = source.dataset.modalTitle;
   modalCopy.textContent = source.dataset.modalCopy;
   modalPrice.textContent = source.dataset.modalPrice ? `¥${source.dataset.modalPrice}` : '';
