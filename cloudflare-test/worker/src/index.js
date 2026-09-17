@@ -15,7 +15,6 @@ const PRODUCTS = Object.freeze({
   sox: {
     name: "CCC Sox",
     price: 2200,
-    available: false,
     sizes: ["S", "M", "L"],
     colors: ["Ivory", "Navy", "Orange"]
   },
