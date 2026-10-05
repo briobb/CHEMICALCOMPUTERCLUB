@@ -44,6 +44,11 @@ const PRODUCTS = Object.freeze({
     name: "EverydayWonder T",
     price: 4400,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "lrbweb-t": {
+    name: "LRBWEB-T",
+    price: 4400,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 

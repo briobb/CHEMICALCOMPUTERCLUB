@@ -126,6 +126,13 @@ test("accepts EverydayWonder T sizes at 4400 yen", () => {
   assert.equal(items[0].quantity, 1);
 });
 
+test("accepts LRBWEB-T sizes at 4400 yen", () => {
+  const items = validateCart([{ productId: "lrbweb-t", variant: "L", quantity: 2 }]);
+  assert.equal(items[0].name, "LRBWEB-T — L");
+  assert.equal(items[0].unitAmount, 4400);
+  assert.equal(items[0].quantity, 2);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";
