@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="CCCの8bitアクションゲーム CHANNEL ZERO。PCキーボード・USBゲームパッド対応。">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="CCCの8bitアクションゲーム CHANNEL ZERO。スマホ縦画面のタッチ操作・PCキーボード・USBゲームパッド対応。">
   <title>CHANNEL ZERO — Chemical Computer Club</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261006-touch1">
 </head>
 <body>
   <main>
@@ -15,9 +15,28 @@
       <div class="screen"><canvas id="game" width="384" height="288" tabindex="0" aria-label="CHANNEL ZERO。左右キーで移動、Zでジャンプと決定、Xでシグナルチューナー。"></canvas><div class="scanlines"></div></div>
       <div class="bezel-bottom"><span>CHEMICAL COMPUTER CLUB</span><span>● POWER</span></div>
     </section>
-    <footer><div><span class="key">← →</span> イドウ <span class="key">Z / A</span> ジャンプ・ケッテイ <span class="key">X / B</span> TUNER</div><div class="tools"><button id="sound">SOUND ON</button><button id="fullscreen">FULLSCREEN ↗</button></div></footer>
+    <section class="touch-controller" id="touch-controller" aria-label="タッチコントローラー">
+      <div class="controller-label"><span>CCC ENTERTAINMENT SYSTEM</span><span>01</span></div>
+      <div class="controller-face">
+        <div class="dpad" aria-label="方向キー">
+          <button class="pad-up" data-action="up" aria-label="メニューを上へ">▲</button>
+          <button class="pad-left" data-action="left" aria-label="左へ移動">◀</button>
+          <span class="pad-center" aria-hidden="true">●</span>
+          <button class="pad-right" data-action="right" aria-label="右へ移動">▶</button>
+          <button class="pad-down" data-action="down" aria-label="メニューを下へ">▼</button>
+        </div>
+        <div class="controller-mark" aria-hidden="true"><span></span><span></span><span></span><b>CCC</b></div>
+        <div class="action-buttons">
+          <div><button data-action="tuner" aria-label="B シグナルチューナー">B</button><small>TUNER</small></div>
+          <div><button data-action="jump" aria-label="A ジャンプ・決定">A</button><small>ジャンプ<br>ケッテイ</small></div>
+        </div>
+      </div>
+      <p class="touch-hint">十字キー：イドウ・センタク　 A：ケッテイ</p>
+    </section>
+    <footer><div class="keyboard-help"><span class="key">← →</span> イドウ <span class="key">Z / A</span> ジャンプ・ケッテイ <span class="key">X / B</span> TUNER</div><div class="tools"><button id="sound">SOUND ON</button><button id="fullscreen">FULLSCREEN ↗</button></div></footer>
     <p class="note" id="pad-status">KEYBOARD READY · USB GAMEPAD SUPPORTED</p>
   </main>
-  <script src="js/config.js"></script><script src="js/stages.js"></script><script src="js/audio.js"></script><script src="js/art.js"></script><script src="js/story.js"></script><script src="js/game.js"></script>
+  <div class="rotate-notice" role="status"><span aria-hidden="true">↻</span><p>スマホを たてにして あそんでね</p></div>
+  <script src="js/config.js?v=20261006-touch1"></script><script src="js/stages.js?v=20261006-touch1"></script><script src="js/audio.js?v=20261006-touch1"></script><script src="js/art.js?v=20261006-touch1"></script><script src="js/story.js?v=20261006-touch1"></script><script src="js/touch.js?v=20261006-touch1"></script><script src="js/game.js?v=20261006-touch1"></script>
 </body>
 </html>
