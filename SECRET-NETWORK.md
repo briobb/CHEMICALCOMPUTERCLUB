@@ -42,3 +42,7 @@
 保存機能削除後は、関連UI・処理の除去とJavaScript構文を確認。
 
 iPhone実機のSafari、本番配信は未確認。本番へのデプロイ・Gitコミット・pushは行っていない。
+
+## 最新リポジトリへの統合
+
+2026-10-14、origin/main を fetch し、最新コミット ae6be9f を基点に codex/secret-network-latest を作成。今回の8ファイルのみを追加し直した。既存の商品・ゲーム・決済ページなどは最新版を維持。旧ローカル履歴はローカル main に保管。
