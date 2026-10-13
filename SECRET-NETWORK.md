@@ -2,8 +2,8 @@
 
 ## 追加ファイル
 
-- `rabbithole/index.html` — RABBITHOLE。指定メッセージと暗号照合完了表示。
-- `orbital/index.html` — ORBITAL。座標・探索番号・コピー操作。
+- `rabbithole.html` — RABBITHOLE。指定メッセージと暗号照合完了表示。
+- `orbital.html` — ORBITAL。座標・探索番号・コピー操作。
 - `innercircle.html` — 最終認証ログ、祝福メッセージ、会員証の表示。
 - `css/secret-network.css` — 専用の共通CRTスタイル、レスポンシブ表示、セーフエリア、モーション軽減。
 - `js/secret-network.js` — 1.6秒の起動演出、タップ／ボタンによるスキップ、座標コピーとエラー表示。
@@ -15,7 +15,7 @@
 
 既存のHTML/CSS/Vanilla JavaScript構成に合わせた静的ファイルの追加。追加ライブラリ、ビルド工程、バックエンドは不要。既存のページ・ナビゲーション・サイトマップは変更していない。作業前から存在したCSS・JS・画像の変更もそのまま維持。
 
-`/rabbithole` と `/orbital` はディレクトリの `index.html` で配信する。GitHub Pagesなどの静的配信では通常、それぞれ末尾スラッシュ付きURLに正規化される。`/innercircle.html` は指定どおり拡張子付き。ドメイン直下への配置が前提。
+ユーザーの指定により、3ページともドメイン直下のHTMLファイルで配信する。URLは `/rabbithole.html`、`/orbital.html`、`/innercircle.html`。以前のディレクトリ形式は削除。
 
 全ページに `noindex, nofollow` を設定し、ページ間リンクは設置していない。JavaScriptが無効でも本文と会員証を閲覧できる。
 
