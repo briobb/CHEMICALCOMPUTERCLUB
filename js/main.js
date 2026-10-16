@@ -118,8 +118,9 @@ function openModal(trigger) {
   document.body.classList.add('modal-open');
 }
 
-document.querySelectorAll('.modal-trigger, .event-row').forEach((trigger) => {
-  trigger.addEventListener('click', () => openModal(trigger));
+document.addEventListener('click', (event) => {
+  const trigger = event.target.closest('.modal-trigger, .event-row');
+  if (trigger) openModal(trigger);
 });
 function closeModal() {
   modal.close();
@@ -250,3 +251,80 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
+
+// Use the catalog as the source of truth, including sizes, colors and galleries.
+const homeProductGrid = document.querySelector('#products .product-grid');
+if (homeProductGrid) {
+  const historyKey = 'ccc-home-products';
+  let catalog;
+  let refreshing = false;
+  let previousIds = [];
+
+  function readPreviousProducts() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      if (Array.isArray(saved)) return saved.filter((id) => typeof id === 'string');
+    } catch { /* Storage may be unavailable; retain this page's history. */ }
+    return previousIds;
+  }
+
+  function rememberProducts() {
+    previousIds = Array.from(homeProductGrid.querySelectorAll('[data-product-id]'),
+      (card) => card.dataset.productId);
+    try {
+      localStorage.setItem(historyKey, JSON.stringify(previousIds));
+    } catch { /* Product browsing must also work without storage access. */ }
+  }
+
+  function shuffle(items) {
+    const result = [...items];
+    for (let i = result.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  async function refreshHomeProducts() {
+    if (refreshing) return;
+    refreshing = true;
+    try {
+      if (!catalog) {
+        const response = await fetch('products.html', { signal: AbortSignal.timeout(8000) });
+        if (!response.ok) throw new Error('Catalog unavailable');
+        // Template contents are inert: unselected product images are not downloaded.
+        const template = document.createElement('template');
+        template.innerHTML = await response.text();
+        catalog = Array.from(template.content.querySelectorAll('.product-catalog .product[data-product-id]'));
+        if (catalog.length < 4) {
+          catalog = null;
+          throw new Error('Incomplete catalog');
+        }
+      }
+      const previous = new Set(readPreviousProducts());
+      const fresh = shuffle(catalog.filter((card) => !previous.has(card.dataset.productId)));
+      // If the catalog ever shrinks below eight, minimize repetition while keeping four cards.
+      const repeated = shuffle(catalog.filter((card) => previous.has(card.dataset.productId)));
+      const cards = [...fresh, ...repeated].slice(0, 4).map((source) => {
+        const card = source.cloneNode(true);
+        const image = card.querySelector('.product-image img');
+        image.loading = 'lazy';
+        image.removeAttribute('fetchpriority');
+        return card;
+      });
+      homeProductGrid.querySelectorAll('.reveal').forEach((card) => revealObserver.unobserve(card));
+      homeProductGrid.replaceChildren(...cards);
+      cards.forEach((card) => revealObserver.observe(card));
+    } catch {
+      // Keep the original usable cards when the catalog cannot be loaded.
+    } finally {
+      rememberProducts();
+      refreshing = false;
+    }
+  }
+
+  refreshHomeProducts();
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) refreshHomeProducts();
+  });
+}
