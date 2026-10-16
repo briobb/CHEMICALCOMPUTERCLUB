@@ -140,6 +140,13 @@ test("accepts EDWT-L/S sizes at 5500 yen", () => {
   assert.equal(items[0].quantity, 1);
 });
 
+test("accepts CCC Sports-T sizes at 5500 yen", () => {
+  const items = validateCart([{ productId: "sports-t", variant: "M", quantity: 2 }]);
+  assert.equal(items[0].name, "CCC Sports-T — M");
+  assert.equal(items[0].unitAmount, 5500);
+  assert.equal(items[0].quantity, 2);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";
