@@ -64,6 +64,11 @@ const PRODUCTS = Object.freeze({
     name: "CCC Neon L/S Yellow",
     price: 5500,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "neon-ls-orange": {
+    name: "CCC Neon L/S Orange",
+    price: 5500,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
