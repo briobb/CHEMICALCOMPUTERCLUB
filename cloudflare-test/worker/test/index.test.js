@@ -150,6 +150,13 @@ test("accepts CCC Sports-T sizes at 5500 yen", () => {
   assert.equal(items[0].quantity, 2);
 });
 
+test("accepts CCC Neon L/S Yellow sizes at 5500 yen", () => {
+  const items = validateCart([{ productId: "neon-ls-yellow", variant: "L", quantity: 1 }]);
+  assert.equal(items[0].name, "CCC Neon L/S Yellow — L");
+  assert.equal(items[0].unitAmount, 5500);
+  assert.equal(items[0].quantity, 1);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";
