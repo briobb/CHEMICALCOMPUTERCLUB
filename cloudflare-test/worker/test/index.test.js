@@ -53,13 +53,15 @@ test("rejects a client-side price and invalid variation implicitly", () => {
 
 test("builds Stripe Checkout line item parameters", () => {
   const items = validateCart([{ productId: "bag", quantity: 2 }]);
-  const params = createStripeParameters(items, "https://example.com");
+  const params = createStripeParameters(items, "https://example.com", undefined, undefined, true);
   assert.equal(params.get("line_items[0][price_data][unit_amount]"), "2200");
   assert.equal(params.get("line_items[0][quantity]"), "2");
   assert.equal(
     params.get("success_url"),
     "https://example.com/cloudflare-test/thank-you.html?session_id={CHECKOUT_SESSION_ID}"
   );
+  assert.equal(params.get("metadata[direct_mail_consent]"), "true");
+  assert.equal(params.get("metadata[direct_mail_consent_version]"), "2026-10-21");
 });
 
 test("builds production checkout return URLs", () => {
@@ -70,6 +72,7 @@ test("builds production checkout return URLs", () => {
     "https://chemicalcomputerclub.com/thank-you.html?session_id={CHECKOUT_SESSION_ID}"
   );
   assert.equal(params.get("cancel_url"), "https://chemicalcomputerclub.com/?checkout=cancelled");
+  assert.equal(params.get("metadata[direct_mail_consent]"), "false");
 });
 
 test("accepts CCC Sox at 2200 yen with color and no size", () => {
@@ -174,6 +177,7 @@ test("normalizes only the order fields needed for fulfillment", () => {
     amount_total: 4400,
     currency: "jpy",
     payment_status: "paid",
+    metadata: { direct_mail_consent: "true", direct_mail_consent_version: "2026-10-21" },
     customer_details: { email: "member@example.com", name: "CCC Member", phone: "09000000000" },
     collected_information: {
       shipping_details: {
@@ -188,6 +192,9 @@ test("normalizes only the order fields needed for fulfillment", () => {
 
   assert.equal(order.sessionId, "cs_test_123");
   assert.equal(order.shippingPostalCode, "1000001");
+  assert.equal(order.directMailConsent, true);
+  assert.equal(order.directMailConsentedAt, 1_800_000_000);
+  assert.equal(order.directMailConsentVersion, "2026-10-21");
   assert.equal(order.items[0].description, "CCC Logo T — M");
   assert.equal(order.items[0].unitAmount, 4400);
 });
@@ -206,12 +213,14 @@ test("builds a plain text and escaped HTML order notification", () => {
     shippingCity: "Chiyoda",
     shippingLine1: "1-1",
     shippingLine2: null,
+    directMailConsent: true,
     items: [{ description: "CCC Mug", quantity: 1, amountTotal: 2200 }]
   });
 
   assert.equal(email.to, "chemicalcomputerclub@gmail.com");
   assert.match(email.subject, /¥2,200/);
   assert.match(email.text, /CCC Mug × 1/);
+  assert.match(email.text, /郵送案内: 希望する/);
   assert.match(email.html, /CCC &lt;Member&gt;/);
   assert.doesNotMatch(email.html, /CCC <Member>/);
 });

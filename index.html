@@ -7,8 +7,8 @@
   <title>Chemical Computer Club</title>
   <link rel="preload" as="image" href="images/photo01-hero.jpg" media="(min-width: 801px)" fetchpriority="high">
   <link rel="preload" as="image" href="images/photo01-hero-mobile.jpg" media="(max-width: 800px)" fetchpriority="high">
-  <link rel="stylesheet" href="css/style.css?v=20260918-1">
-  <script src="js/main.js?v=20261017-1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=20261021-1">
+  <script src="js/main.js?v=20261021-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へ移動</a>
@@ -91,6 +91,6 @@
 
   <dialog class="modal" id="detail-modal" aria-labelledby="modal-title"><div class="modal-layout"><div class="modal-media" id="modal-media"><img id="modal-image" alt="" hidden><div class="modal-gallery" id="modal-gallery" aria-label="商品写真一覧" hidden></div></div><div class="modal-detail"><p class="eyebrow">CCC / DETAIL FILE</p><h2 id="modal-title"></h2><p id="modal-copy"></p><p class="modal-price" id="modal-price"></p><div class="cart-options" id="cart-options"><label id="color-label" hidden>カラー<select id="product-color"></select></label><label id="variant-label" hidden>サイズ<select id="product-variant"></select></label><label>数量<input id="product-quantity" type="number" min="1" max="20" value="1"></label><button class="button" id="add-to-cart" type="button">Add to Cart</button><p class="cart-feedback" id="cart-feedback" aria-live="polite"></p></div><div class="modal-actions"><a class="button" id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" hidden>イベント詳細を見る ↗</a><button class="button button-secondary modal-close-action" type="button">Close</button></div></div></div></dialog>
 
-  <dialog class="cart-modal" id="cart-modal" aria-labelledby="cart-title"><div class="cart-dialog-head"><div><p class="eyebrow">CCC / SHOPPING CART</p><h2 id="cart-title">Your equipment</h2></div><button class="text-button" id="close-cart" type="button">Close</button></div><div id="cart-items"></div><div class="cart-summary"><span>合計</span><strong id="cart-total">¥0</strong></div><div class="cart-dialog-actions"><button class="button button-secondary" id="clear-cart" type="button">Clear Cart</button><button class="button" id="checkout-button" type="button">Stripe Checkoutへ進む</button></div><p class="cart-checkout-note">Stripeの安全な決済ページへ移動します。</p><p class="cart-feedback" id="checkout-status" aria-live="polite"></p></dialog>
+  <dialog class="cart-modal" id="cart-modal" aria-labelledby="cart-title"><div class="cart-dialog-head"><div><p class="eyebrow">CCC / SHOPPING CART</p><h2 id="cart-title">Your equipment</h2></div><button class="text-button" id="close-cart" type="button">Close</button></div><div id="cart-items"></div><div class="cart-summary"><span>合計</span><strong id="cart-total">¥0</strong></div><label class="cart-marketing-consent"><input id="direct-mail-consent" type="checkbox" checked><span>CCCから新商品・イベントなどの郵送案内を受け取る（任意）<small>配送先住所を郵送案内に利用します。いつでも停止できます。詳しくは<a href="privacy.html" target="_blank">プライバシーポリシー</a>をご確認ください。</small></span></label><div class="cart-dialog-actions"><button class="button button-secondary" id="clear-cart" type="button">Clear Cart</button><button class="button" id="checkout-button" type="button">Stripe Checkoutへ進む</button></div><p class="cart-checkout-note">Stripeの安全な決済ページへ移動します。</p><p class="cart-feedback" id="checkout-status" aria-live="polite"></p></dialog>
 </body>
 </html>

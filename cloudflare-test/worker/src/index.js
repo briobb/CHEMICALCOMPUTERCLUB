@@ -193,7 +193,8 @@ export function createStripeParameters(
   items,
   siteUrl,
   successPath = "/cloudflare-test/thank-you.html",
-  cancelPath = "/cloudflare-test/index-cart-test.html?checkout=cancelled"
+  cancelPath = "/cloudflare-test/index-cart-test.html?checkout=cancelled",
+  directMailConsent = false
 ) {
   const params = new URLSearchParams();
   params.set("mode", "payment");
@@ -202,6 +203,8 @@ export function createStripeParameters(
   params.set("success_url", `${siteUrl}${successPath}${successSeparator}session_id={CHECKOUT_SESSION_ID}`);
   params.set("cancel_url", `${siteUrl}${cancelPath}`);
   params.set("shipping_address_collection[allowed_countries][0]", "JP");
+  params.set("metadata[direct_mail_consent]", directMailConsent ? "true" : "false");
+  params.set("metadata[direct_mail_consent_version]", "2026-10-21");
 
   items.forEach((item, index) => {
     const prefix = `line_items[${index}]`;
@@ -231,6 +234,7 @@ async function createCheckoutSession(request, env, cors) {
   } catch (error) {
     return json({ error: error.message }, 400, cors);
   }
+  const directMailConsent = body.directMailConsent === true;
 
   const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
@@ -242,7 +246,8 @@ async function createCheckoutSession(request, env, cors) {
       items,
       env.SITE_URL,
       env.CHECKOUT_SUCCESS_PATH,
-      env.CHECKOUT_CANCEL_PATH
+      env.CHECKOUT_CANCEL_PATH,
+      directMailConsent
     )
   });
   const stripeData = await stripeResponse.json();
@@ -274,6 +279,7 @@ export function normalizeOrder(eventId, session) {
   const customer = session.customer_details || {};
   const shipping = session.collected_information?.shipping_details || session.shipping_details || {};
   const address = shipping.address || {};
+  const directMailConsent = session.metadata?.direct_mail_consent === "true";
   const items = (session.line_items?.data || []).map((item, lineIndex) => ({
     lineIndex,
     description: normalizeText(item.description) || "Item",
@@ -300,6 +306,9 @@ export function normalizeOrder(eventId, session) {
     shippingCity: normalizeText(address.city) || null,
     shippingLine1: normalizeText(address.line1) || null,
     shippingLine2: normalizeText(address.line2) || null,
+    directMailConsent,
+    directMailConsentedAt: directMailConsent ? Number(session.created) || 0 : null,
+    directMailConsentVersion: normalizeText(session.metadata?.direct_mail_consent_version) || null,
     items
   };
 }
@@ -310,17 +319,22 @@ async function saveOrder(db, order) {
       INSERT INTO orders (
         session_id, event_id, stripe_created_at, amount_total, currency, payment_status,
         customer_email, customer_name, customer_phone, shipping_name, shipping_country,
-        shipping_postal_code, shipping_state, shipping_city, shipping_line1, shipping_line2
-      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)
+        shipping_postal_code, shipping_state, shipping_city, shipping_line1, shipping_line2,
+        direct_mail_consent, direct_mail_consented_at, direct_mail_consent_version
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19)
       ON CONFLICT(session_id) DO UPDATE SET
         event_id = excluded.event_id,
         payment_status = excluded.payment_status,
+        direct_mail_consent = excluded.direct_mail_consent,
+        direct_mail_consented_at = excluded.direct_mail_consented_at,
+        direct_mail_consent_version = excluded.direct_mail_consent_version,
         updated_at = CURRENT_TIMESTAMP
     `).bind(
       order.sessionId, order.eventId, order.stripeCreatedAt, order.amountTotal, order.currency,
       order.paymentStatus, order.customerEmail, order.customerName, order.customerPhone,
       order.shippingName, order.shippingCountry, order.shippingPostalCode, order.shippingState,
-      order.shippingCity, order.shippingLine1, order.shippingLine2
+      order.shippingCity, order.shippingLine1, order.shippingLine2,
+      order.directMailConsent ? 1 : 0, order.directMailConsentedAt, order.directMailConsentVersion
     ),
     ...order.items.map((item) => db.prepare(`
       INSERT OR IGNORE INTO order_items (
@@ -360,6 +374,7 @@ export function createOrderEmail(order) {
     `電話番号: ${order.customerPhone || "未入力"}`,
     `配送先名: ${order.shippingName || "未入力"}`,
     `配送先: ${addressParts.join(" ") || "未入力"}`,
+    `郵送案内: ${order.directMailConsent ? "希望する" : "希望しない"}`,
     "",
     "発送状態はCloudflare D1で unfulfilled として登録されています。"
   ].join("\n");
@@ -378,7 +393,8 @@ export function createOrderEmail(order) {
     <strong>メール:</strong> ${escapeHtml(order.customerEmail || "未入力")}<br>
     <strong>電話番号:</strong> ${escapeHtml(order.customerPhone || "未入力")}<br>
     <strong>配送先名:</strong> ${escapeHtml(order.shippingName || "未入力")}<br>
-    <strong>配送先:</strong> ${escapeHtml(addressParts.join(" ") || "未入力")}</p>
+    <strong>配送先:</strong> ${escapeHtml(addressParts.join(" ") || "未入力")}<br>
+    <strong>郵送案内:</strong> ${order.directMailConsent ? "希望する" : "希望しない"}</p>
     <p>発送状態はCloudflare D1で <code>unfulfilled</code> として登録されています。</p>
   `;
 

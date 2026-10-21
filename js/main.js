@@ -137,6 +137,7 @@ modal.addEventListener('close', () => document.body.classList.remove('modal-open
 const CART_KEY = 'ccc-cart';
 const CHECKOUT_ENDPOINT = 'https://ccc-checkout.chemicalcomputerclub.workers.dev/create-checkout-session';
 const cartModal = document.querySelector('#cart-modal');
+const directMailConsent = document.querySelector('#direct-mail-consent');
 
 function loadCart() {
   try {
@@ -221,6 +222,7 @@ document.querySelector('#checkout-button').addEventListener('click', async () =>
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
+        directMailConsent: directMailConsent.checked,
         items: cart.map((item) => ({
           productId: item.id,
           size: item.variant,
