@@ -22,12 +22,16 @@ function setupSystem() {
     props.setProperty('SPREADSHEET_ID',book.getId()); book.setSpreadsheetTimeZone(RADAR.timezone);
     Object.keys(RADAR.columns).forEach(function(name) {
       var s = book.getSheetByName(name) || book.insertSheet(name), expected = columns_(name);
+      ensureGrid_(s,2,expected.length);
       if (s.getLastRow()===0) s.getRange(1,1,1,expected.length).setValues([expected]);
       else {
         var current = s.getRange(1,1,1,s.getLastColumn()).getValues()[0];
         var missing = expected.filter(function(k) { return current.indexOf(k)<0; });
         if (new Set(current).size!==current.length) throw new Error('Duplicate headers in '+name);
-        if (missing.length) s.getRange(1,current.length+1,1,missing.length).setValues([missing]);
+        if (missing.length) {
+          ensureGrid_(s,2,current.length+missing.length);
+          s.getRange(1,current.length+1,1,missing.length).setValues([missing]);
+        }
       }
       s.setFrozenRows(1); s.getRange(1,1,1,s.getLastColumn()).setFontWeight('bold').setBackground('#f2eee3');
     });

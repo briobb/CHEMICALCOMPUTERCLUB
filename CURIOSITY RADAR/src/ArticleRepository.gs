@@ -9,6 +9,10 @@ function sheet_(name) {
   return s;
 }
 function columns_(name) { return RADAR.columns[name].split(' '); }
+function ensureGrid_(sheet,rows,cols) {
+  if (rows>sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(),rows-sheet.getMaxRows());
+  if (cols>sheet.getMaxColumns()) sheet.insertColumnsAfter(sheet.getMaxColumns(),cols-sheet.getMaxColumns());
+}
 function rows_(name) {
   var s = sheet_(name), n = s.getLastRow();
   if (n < 2) return [];
@@ -26,6 +30,7 @@ function cell_(v) {
 function append_(name, objects) {
   if (!objects.length) return [];
   var s = sheet_(name), headers = s.getRange(1,1,1,s.getLastColumn()).getValues()[0], first = s.getLastRow()+1;
+  ensureGrid_(s,first+objects.length-1,headers.length);
   s.getRange(first,1,objects.length,headers.length).setValues(objects.map(function(o) { return headers.map(function(k) { return cell_(o[k]); }); }));
   return objects.map(function(o,i) { o._row = first+i; return o; });
 }

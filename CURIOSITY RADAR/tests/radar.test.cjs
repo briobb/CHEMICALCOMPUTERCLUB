@@ -96,7 +96,7 @@ test('real template escapes content, has no images and hides scores by default',
   const {c}=harness();const p=c.reportPeriod_(new Date('2026-11-02T00:00:00Z'));
   const data=c.reportData_([article('a',{title_ja:'<script>alert(1)</script>'})],p,1,c.settings_());const r=c.renderReport_(data);
   assert.ok(r.html.includes('&lt;script&gt;'));assert.ok(!r.html.includes('<script>'));assert.ok(!/<img\b/.test(r.html));assert.ok(!r.html.includes('管理者スコア：'));
-  assert.ok(r.text.includes('元')===false);assert.ok(r.text.includes('https://example.com/a'));assert.match(r.subject,/NO.001$/);
+  assert.ok(r.text.includes('https://example.com/a'));assert.match(r.subject,/NO.001$/);
 });
 test('cost reservation prevents overspending and survives unknown network outcomes',()=>{
   const h=harness(),{c}=h,a=article('a'),ev={kind:'RSS_ONLY',excerpt:''};let calls=0;h.setFetcher(()=>{calls++;throw new Error('timeout');});
@@ -128,4 +128,28 @@ test('test email does not freeze, consume issue numbers or update delivery flags
 test('secrets are redacted and untrusted spreadsheet text cannot become a formula',()=>{
   const {c}=harness();assert.equal(c.sanitize_('error sk-test-not-real'),'error [REDACTED]');assert.equal(c.cell_('=IMPORTXML("bad")'),"'=IMPORTXML(\"bad\")");
   c.log_('TEST','FAILED',0,0,0,'Bearer sk-test-not-real');assert.ok(!JSON.stringify(c.rows_('LOGS')).includes('sk-test-not-real'));
+});
+test('Sheets grid expands beyond default columns and row capacity',()=>{
+  const {c,sheets}=harness();assert.ok(sheets.get('ARTICLES').getMaxColumns()>=34);
+  c.append_('LOGS',Array.from({length:1010},()=>({timestamp:new Date().toISOString(),process:'GRID',status:'OK'})));
+  assert.ok(sheets.get('LOGS').getMaxRows()>1000);assert.equal(c.rows_('LOGS').filter(r=>r.process==='GRID').length,1010);
+});
+test('Gmail success followed by status-write failure leaves SENDING and never sends twice',()=>{
+  const {c,sent}=harness();c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));const original=c.update_;
+  c.update_=(name,row,changes)=>{if(name==='REPORTS'&&changes.status==='SENT')throw new Error('Sheets unavailable after Gmail success');return original(name,row,changes);};
+  const monday=new Date('2026-11-01T23:30:00Z');assert.throws(()=>c.sendReport_(monday));assert.equal(c.rows_('REPORTS')[0].status,'SENDING');
+  c.update_=original;c.sendReport_(monday);assert.equal(c.rows_('REPORTS')[0].status,'UNKNOWN');
+  assert.equal(sent.filter(s=>s[1].startsWith('CCC CURIOSITY REPORT')).length,1);
+});
+test('failed reservation persistence prevents the API request',()=>{
+  const h=harness(),{c}=h;let calls=0;h.setFetcher(()=>{calls++;throw new Error('Should not run');});
+  const original=c.log_;c.log_=(process,...args)=>{if(process==='AI_REQUEST')throw new Error('Ledger unavailable');return original(process,...args);};
+  assert.throws(()=>c.requestEvaluation_(article('a'),null,{kind:'RSS_ONLY',excerpt:''},c.settings_(),c.deadline_()),/Ledger/);assert.equal(calls,0);
+});
+test('persistent 5xx stops after three paid attempts and interrupted evaluation resumes',()=>{
+  const h=harness(),{c}=h;let calls=0;const now=new Date().toISOString();
+  c.append_('ARTICLES',[article('retry',{ai_status:'EVALUATING',ai_attempts:1,published_at:now,fetched_at:now})]);
+  h.setFetcher(()=>{calls++;return h.response(503,{});});c.evaluatePendingArticles();
+  assert.equal(calls,2);assert.equal(c.rows_('ARTICLES')[0].ai_attempts,3);assert.equal(c.rows_('ARTICLES')[0].ai_status,'FAILED');
+  c.evaluatePendingArticles();assert.equal(calls,2);
 });

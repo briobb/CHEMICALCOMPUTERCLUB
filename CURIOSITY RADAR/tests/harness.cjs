@@ -21,8 +21,9 @@ function harness() {
   }
   const book = {getId:()=> 'test-sheet',getUrl:()=> 'https://docs.google.com/spreadsheets/d/test-sheet',
     setSpreadsheetTimeZone(){},getSheetByName:n=>sheets.get(n),insertSheet(name){
-      const s={data:[],getName:()=>name,getLastRow(){return this.data.length;},getLastColumn(){return Math.max(0,...this.data.map(r=>r.length));},
-        getMaxRows:()=>1000,setFrozenRows(){},getRange(...args){return range(this,...args);}};
+      const s={data:[],maxRows:1000,maxColumns:26,getName:()=>name,getLastRow(){return this.data.length;},getLastColumn(){return Math.max(0,...this.data.map(r=>r.length));},
+        getMaxRows(){return this.maxRows;},getMaxColumns(){return this.maxColumns;},insertRowsAfter(_,n){this.maxRows+=n;},insertColumnsAfter(_,n){this.maxColumns+=n;},
+        setFrozenRows(){},getRange(row,col,height=1,width=1){if(row+height-1>this.maxRows||col+width-1>this.maxColumns)throw new Error('Grid out of bounds');return range(this,row,col,height,width);}};
       sheets.set(name,s); return s;
     }};
   function element(node) {
