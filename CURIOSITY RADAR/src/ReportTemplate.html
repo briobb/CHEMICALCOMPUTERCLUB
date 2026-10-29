@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f2eee3;color:#242420;font-family:Arial,'Hiragino Kaku Gothic ProN',Meiryo,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f2eee3;"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;border-top:6px solid #dc632a;">
+<tr><td style="padding:28px 16px 24px;border-bottom:2px solid #242420;">
+<p style="font-size:12px;letter-spacing:2px;margin:0 0 14px;">CHEMICAL COMPUTER CLUB</p>
+<h1 style="font-family:monospace;font-size:30px;line-height:1.15;letter-spacing:-1px;margin:0 0 12px;">CURIOSITY<br>REPORT</h1>
+<p style="font-family:monospace;font-size:11px;letter-spacing:1px;">WEEKLY INTELLIGENCE DIGEST</p>
+<p style="font-family:monospace;font-size:12px;margin:20px 0 0;">ISSUE NO.<?= String(data.issue_number).padStart(3,'0') ?> &nbsp; / &nbsp; <?= data.date ?></p>
+</td></tr>
+<tr><td style="padding:24px 16px;font-size:14px;line-height:1.9;">
+今週も世界中の研究所、大学、科学者たちから興味深い報告が届いています。<br>
+その中から、CCCのクラブ員がきっと気に入る話題を選びました。
+<p style="color:#666;font-size:11px;">収録期間：<?= data.period_start ?> — <?= data.period_end ?></p>
+</td></tr>
+<? if (!data.articles.length) { ?><tr><td style="padding:24px 16px;font-size:15px;line-height:1.9;">今週は掲載基準を満たす記事がありませんでした。次の発見をお待ちください。</td></tr><? } ?>
+<? data.articles.forEach(function(a,i) { ?>
+<tr><td style="padding:26px 16px;border-top:1px solid #bdb9ad;overflow-wrap:anywhere;">
+<p style="font-family:monospace;font-size:12px;color:#a83c0d;letter-spacing:1px;margin:0 0 12px;"><?= String(i+1).padStart(2,'0') ?> / <?= a.section ?></p>
+<h2 style="font-size:21px;line-height:1.6;margin:0 0 16px;"><?= a.title ?></h2>
+<p style="font-size:15px;line-height:1.95;margin:0 0 18px;"><?= a.summary ?></p>
+<p style="font-size:14px;line-height:1.8;padding-left:12px;border-left:3px solid #dc632a;"><strong>面白いポイント</strong><br><?= a.point ?></p>
+<p style="font-size:12px;line-height:1.8;color:#555;">科学的信頼性：<strong><?= a.reliability ?></strong><br>注記：<?= a.note ?><br>出典確認：<?= a.source_note ?></p>
+<p style="font-size:13px;line-height:1.8;"><a href="<?= safeUrl_(a.url) ?>" style="color:#a83c0d;text-decoration:underline;">元記事を読む — <?= a.source ?></a></p>
+<? if (data.show_score) { ?><p style="font-size:11px;color:#666;">管理者スコア：<?= a.score ?>/100</p><? } ?>
+</td></tr>
+<? }); ?>
+<tr><td style="border-top:2px solid #242420;padding:28px 16px;font-family:monospace;font-size:11px;line-height:1.8;">
+CHEMICAL COMPUTER CLUB<br>TIMBERFIELD, OREGON<br>EST. 1986<br><br><span style="color:#a83c0d;">END OF TRANSMISSION</span>
+<p style="font-family:Arial,sans-serif;font-size:10px;color:#666;">CCCの所在地・沿革は架空の設定です。記事の科学的事実とは関係ありません。</p>
+</td></tr></table></td></tr></table></body></html>

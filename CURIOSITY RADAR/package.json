@@ -1,0 +1,17 @@
+{
+  "name": "ccc-curiosity-radar",
+  "version": "4.1.0",
+  "private": true,
+  "description": "Administrator-only weekly science digest for Google Apps Script",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "check": "node scripts/check.cjs",
+    "preview": "node scripts/preview.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.12"
+  }
+}
