@@ -117,9 +117,9 @@ test('429 retry recovers, auth stops, evaluation test leaves production rows unc
   const h=harness(),{c}=h;const now=new Date().toISOString();c.append_('ARTICLES',[article('pending',{ai_status:'PENDING',ai_attempts:0,published_at:now,fetched_at:now})]);
   let count=0;h.setFetcher(()=>{count++;return count===1?h.response(429,{}, {'Retry-After':'1'}):h.response(200,{status:'completed',usage:{input_tokens:100,output_tokens:200},output:[{content:[{type:'output_text',text:JSON.stringify(evaluated())}]}]});});
   const before=JSON.stringify(c.rows_('ARTICLES'));c.testArticleEvaluation();assert.equal(JSON.stringify(c.rows_('ARTICLES')),before);assert.equal(count,2);
-  c.evaluatePendingArticles();assert.equal(c.rows_('ARTICLES')[0].ai_status,'DONE');
+  c.withLock_(()=>c.evaluatePending_(c.deadline_(),false));assert.equal(c.rows_('ARTICLES')[0].ai_status,'DONE');
   c.append_('ARTICLES',[article('auth',{ai_status:'PENDING',ai_attempts:0,published_at:now,fetched_at:now})]);h.setFetcher(()=>h.response(401,{}));
-  assert.match(c.evaluatePendingArticles().stopped,/401/);assert.equal(c.rows_('ARTICLES')[1].ai_status,'PENDING');
+  assert.match(c.withLock_(()=>c.evaluatePending_(c.deadline_(),false)).stopped,/401/);assert.equal(c.rows_('ARTICLES')[1].ai_status,'PENDING');
 });
 test('test email does not freeze, consume issue numbers or update delivery flags',()=>{
   const {c,sent}=harness();c.append_('ARTICLES',[article('a')]);const before=JSON.stringify(c.rows_('ARTICLES'));c.sendTestReport();
@@ -149,7 +149,7 @@ test('failed reservation persistence prevents the API request',()=>{
 test('persistent 5xx stops after three paid attempts and interrupted evaluation resumes',()=>{
   const h=harness(),{c}=h;let calls=0;const now=new Date().toISOString();
   c.append_('ARTICLES',[article('retry',{ai_status:'EVALUATING',ai_attempts:1,published_at:now,fetched_at:now})]);
-  h.setFetcher(()=>{calls++;return h.response(503,{});});c.evaluatePendingArticles();
+  h.setFetcher(()=>{calls++;return h.response(503,{});});c.withLock_(()=>c.evaluatePending_(c.deadline_(),false));
   assert.equal(calls,2);assert.equal(c.rows_('ARTICLES')[0].ai_attempts,3);assert.equal(c.rows_('ARTICLES')[0].ai_status,'FAILED');
-  c.evaluatePendingArticles();assert.equal(calls,2);
+  c.withLock_(()=>c.evaluatePending_(c.deadline_(),false));assert.equal(calls,2);
 });

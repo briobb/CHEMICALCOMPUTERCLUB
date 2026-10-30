@@ -3,6 +3,7 @@ function onOpen() {
     .addItem('初期セットアップ','setupSystem')
     .addItem('RSS取得テスト（保存なし）','testFeedFetch')
     .addItem('AI評価テスト（1記事・API料金あり）','testArticleEvaluation')
+    .addItem('一次評価のみ（最大10記事ずつ）','scorePendingArticles')
     .addSeparator().addItem('本日のニュース取得','fetchAllFeeds')
     .addItem('未評価記事処理','evaluatePendingArticles')
     .addItem('週間レポートプレビュー','previewWeeklyReport')
@@ -21,13 +22,13 @@ function job_(name,fn) {
     catch (e) { log_(name,'FAILED',0,0,0,sanitize_(e)); notify_(name,sanitize_(e)); throw e; }
   });
 }
-function runDailyJob() { return job_('DAILY',function(deadline) { fetchFeeds_(deadline,false); return evaluatePending_(deadline,false); }); }
-function resumePendingJob() { return job_('RESUME',function(deadline) { return evaluatePending_(deadline,false); }); }
+function runDailyJob() { return job_('DAILY',function(deadline) { fetchFeeds_(deadline,false); return evaluatePipeline_(deadline,null,currentEvaluationPeriod_()); }); }
+function resumePendingJob() { return job_('RESUME',function(deadline) { return evaluatePipeline_(deadline,null,currentEvaluationPeriod_()); }); }
 function runFinalizeJob() {
   return job_('REPORT_BUILD',function(deadline) {
     // Refresh on Sunday evening. Freeze even when a large evaluation backlog remains.
     fetchFeeds_(Math.min(deadline,Date.now()+60000),false);
-    evaluatePending_(Math.min(deadline,Date.now()+120000),false);
+    evaluatePipeline_(Math.min(deadline,Date.now()+120000),null,reportPeriod_(new Date()));
     return finalizeReport_(new Date());
   });
 }
@@ -41,7 +42,7 @@ function retryFailedJobs() {
       if (r.status==='SENT') markDelivered_(r);
     });
     fetchFeeds_(Math.min(deadline,Date.now()+60000),false);
-    var result = evaluatePending_(deadline,false);
+    var result = evaluatePipeline_(deadline,null,currentEvaluationPeriod_());
     var period = reportPeriod_(new Date()), report = rows_('REPORTS').filter(function(r) { return r.report_id===period.id; })[0];
     if (report && report.status==='FAILED' && new Date()>=date_(report.period_end)) sendReport_(new Date());
     // Do not create or send a missing/READY/UNKNOWN issue from a generic retry operation.

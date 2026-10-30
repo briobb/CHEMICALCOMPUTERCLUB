@@ -73,17 +73,20 @@ function continueSourceTest_(all) {
       }
       if (all) ids=state.fetch_results.filter(function(r) { return !r.error; }).map(function(r) { return r.source; });
       var foreignPending = rows_('ARTICLES').some(function(a) {
-        return ids.indexOf(a.source_id)<0 && ['PENDING','EVALUATING'].indexOf(a.ai_status)>=0;
+        return ids.indexOf(a.source_id)<0 && ['PENDING','EVALUATING','SCORING','SUMMARIZING'].indexOf(a.ai_status)>=0;
       });
       if (!all && foreignPending) throw new Error('Pending articles from other sources exist; test stopped before evaluation');
-      var result = evaluatePending_(deadline_(),false,all ? ids : undefined);
+      var testNow = new Date();
+      var testPeriod = {start:new Date(testNow.getTime()-14*86400000),end:testNow};
+      var result = evaluatePipeline_(deadline_(),ids,testPeriod);
+      if (result.stopped) { state.evaluation_stop=sanitize_(result.stopped); saveFourSourceTest_(state,all); }
       if (result.stopped && !all) throw new Error(result.stopped);
       var articles = rows_('ARTICLES').filter(function(a) { return ids.indexOf(a.source_id)>=0; });
-      if (!result.stopped && articles.some(function(a) { return ['PENDING','EVALUATING'].indexOf(a.ai_status)>=0; })) return state;
+      if (!result.stopped && result.pending) return state;
       // Use recent news through now, rather than the last completed production week.
       var now = new Date(), period = {start:new Date(now.getTime()-14*86400000),end:now,id:(all?'TEST-ALL-':'TEST-FOUR-')+day_(now)};
       var chosen = chooseArticles_(articles,rows_('REPORTS'),period,c);
-      if (!chosen.length) throw new Error('No articles met the production selection criteria; no empty email sent');
+      if (!chosen.length) throw new Error((result.stopped ? sanitize_(result.stopped)+'; ' : '')+'No articles met the production selection criteria; no empty email sent');
       var rendered = renderReport_(reportData_(chosen,period,0,c));
       var note = (all ? state.source_ids.length+'情報源' : '4情報源')+'の実データによるテストです。直近14日間を対象に、本番と同じ採点・要約・掲載基準を使用しています。';
       if (all) {

@@ -24,15 +24,15 @@ function validateEvaluation_(v,evidence,article) {
   }
   return v;
 }
-function evaluatePendingArticles() { return withLock_(function() { return evaluatePending_(deadline_(),false); }); }
+function evaluatePendingArticles() { return withLock_(function() { return evaluatePipeline_(deadline_(),null,currentEvaluationPeriod_()); }); }
 function testArticleEvaluation() { return withLock_(function() { return evaluatePending_(deadline_(),true); }); }
-function evaluatePending_(deadline,test,sourceIds) {
+function evaluatePending_(deadline,test,sourceIds,articleIds) {
   var c = settings_(), sources = rows_('SOURCES'), articles = rows_('ARTICLES'), done = 0;
   // Lock acquisition proves an old EVALUATING execution has ended. Preserve its spent attempt.
-  if (!test) articles.filter(function(a) { return a.ai_status==='EVALUATING' && (!sourceIds || sourceIds.indexOf(a.source_id)>=0); }).forEach(function(a) {
-    update_('ARTICLES',a,{ai_status:Number(a.ai_attempts)>=3?'FAILED':'PENDING',ai_error:'Previous execution interrupted'});
+  if (!test) articles.filter(function(a) { return ['EVALUATING','SUMMARIZING'].indexOf(a.ai_status)>=0 && (!sourceIds || sourceIds.indexOf(a.source_id)>=0); }).forEach(function(a) {
+    update_('ARTICLES',a,{ai_status:Number(a.ai_attempts)>=3?'FAILED':a.ai_status==='SUMMARIZING'?'SCORED':'PENDING',ai_error:'Previous execution interrupted'});
   });
-  var candidates = articles.filter(function(a) { return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && a.ai_status==='PENDING' && Number(a.ai_attempts || 0)<3; });
+  var candidates = articles.filter(function(a) { return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && (articleIds ? articleIds.indexOf(a.article_id)>=0 && a.ai_status==='SCORED' : a.ai_status==='PENDING') && Number(a.ai_attempts || 0)<3; });
   candidates.sort(function(a,b) { return primaryRank_(b)-primaryRank_(a) || String(b.published_at).localeCompare(String(a.published_at)); });
   var accepted = articles.filter(function(a) { return a.ai_status==='DONE'; });
   for (var i=0;i<candidates.length && timeLeft_(deadline,60000);i++) {
@@ -47,7 +47,7 @@ function evaluatePending_(deadline,test,sourceIds) {
       try {
         var result = requestEvaluation_(a,source,evidence,c,deadline,function() {
           attempts++;
-          if (!test) { update_('ARTICLES',a,{ai_status:'EVALUATING',ai_attempts:attempts}); SpreadsheetApp.flush(); }
+          if (!test) { update_('ARTICLES',a,{ai_status:articleIds?'SUMMARIZING':'EVALUATING',ai_attempts:attempts}); SpreadsheetApp.flush(); }
         });
         validateEvaluation_(result,evidence,a);
         if (test) { log_('AI_TEST','OK',1,0,0,'No article/history updated'); console.log(JSON.stringify(result)); return result; }
@@ -55,7 +55,7 @@ function evaluatePending_(deadline,test,sourceIds) {
           evidence_url:evidence.url,evidence_excerpt:evidence.excerpt.slice(0,800),evidence_checked_at:evidence.checked_at}));
         accepted.push(a); done++; break;
       } catch (e) {
-        if (!test) update_('ARTICLES',a,{ai_status:attempts>=3?'FAILED':'PENDING',ai_error:sanitize_(e)});
+        if (!test) update_('ARTICLES',a,{ai_status:attempts>=3?'FAILED':articleIds?'SCORED':'PENDING',ai_error:sanitize_(e)});
         log_(test?'AI_TEST':'AI_EVALUATE','FAILED',0,0,0,a.article_id+': '+sanitize_(e));
         if (e.stop) return {evaluated:done,stopped:sanitize_(e)};
         if (!e.retryable) { if (!test) update_('ARTICLES',a,{ai_status:'FAILED'}); break; }

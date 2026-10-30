@@ -1,5 +1,5 @@
 function publisher_(a) { return a.source_id.replace(/_(HISTORY|RETRO|NEURO|RESEARCH)$/,''); }
-function chooseArticles_(articles,reports,period,c) {
+function chooseArticles_(articles,reports,period,c,rankingOnly) {
   var reserved = new Set();
   reports.forEach(function(r) {
     // Even FAILED/UNKNOWN frozen reports reserve their articles to prevent overlapping issues.
@@ -8,10 +8,10 @@ function chooseArticles_(articles,reports,period,c) {
   var previous = articles.filter(function(a) { return reserved.has(a.article_id) || a.delivery_status==='DELIVERED'; });
   var candidates = articles.filter(function(a) {
     var d = date_(a.category==='RETRO' ? a.fetched_at : a.published_at);
-    return a.ai_status==='DONE' && a.delivery_status!=='DELIVERED' && !reserved.has(a.article_id) &&
+    return (a.ai_status==='DONE' || rankingOnly && a.ai_status==='SCORED') && a.delivery_status!=='DELIVERED' && !reserved.has(a.article_id) &&
       d && d>=period.start && d<period.end && Number(a.total_score)>=c.MIN_SCORE &&
-      RADAR.reliability.indexOf(a.reliability)>=0 && a.reliability!=='UNVERIFIED' &&
-      (a.reliability!=='VERIFIED' || (bool_(a.source_verified) && a.evidence_url && a.evidence_checked_at)) &&
+      (rankingOnly && a.ai_status==='SCORED' || (RADAR.reliability.indexOf(a.reliability)>=0 && a.reliability!=='UNVERIFIED' &&
+      (a.reliability!=='VERIFIED' || (bool_(a.source_verified) && a.evidence_url && a.evidence_checked_at)))) &&
       !previous.some(function(b) { return sameNews_(a,b); });
   });
   candidates.sort(function(a,b) { return Number(b.total_score)-Number(a.total_score) || primaryRank_(b)-primaryRank_(a) || String(a.article_id).localeCompare(String(b.article_id)); });

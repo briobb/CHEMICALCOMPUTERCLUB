@@ -4,7 +4,7 @@ const {harness,article}=require('./harness.cjs');
 function ready() {
   const h=harness();
   h.c.fetchFeeds_=()=>['ESA','MIT','MIT_HISTORY','NASA'].map(source=>({source}));
-  h.c.evaluatePending_=()=>({evaluated:0});
+  h.c.evaluatePipeline_=()=>({evaluated:0,pending:h.c.rows_('ARTICLES').some(a=>a.ai_status==='PENDING')});
   h.c.append_('ARTICLES',[article('fresh',{source_id:'NASA',published_at:new Date(Date.now()-60000).toISOString()})]);
   return h;
 }
@@ -30,7 +30,7 @@ test('pending work resumes; budget stops without sending or repeated triggers',(
   const {c,sent,triggers}=ready();c.startFourSourceTest();
   c.append_('ARTICLES',[article('pending',{source_id:'MIT',ai_status:'PENDING'})]);
   assert.equal(c.continueFourSourceTest().status,'EVALUATE');assert.equal(sent.length,0);
-  c.evaluatePending_=()=>({stopped:'Monthly budget exhausted'});
+  c.evaluatePipeline_=()=>({stopped:'Monthly budget exhausted'});
   assert.equal(c.continueFourSourceTest().status,'FAILED');assert.equal(sent.length,0);assert.equal(triggers.length,0);
 });
 test('feed failure, unexpected enabled source and empty selection do not send',()=>{

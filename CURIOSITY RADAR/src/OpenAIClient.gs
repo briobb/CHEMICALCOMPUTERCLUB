@@ -22,19 +22,22 @@ function evaluationInstructions_() {
   ].join('\n');
 }
 function requestEvaluation_(article,source,evidence,c,deadline,onStart) {
-  var key = PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');
-  if (!key) { var missing = new Error('OPENAI_API_KEY missing'); missing.stop = true; throw missing; }
-  if (!timeLeft_(deadline,45000)) { var late = new Error('Execution time budget reached'); late.stop = true; throw late; }
   var body = {model:c.OPENAI_MODEL,store:false,max_output_tokens:c.MAX_OUTPUT_TOKENS,
     reasoning:{effort:c.REASONING_EFFORT},
     input:[{role:'system',content:evaluationInstructions_()},{role:'user',content:JSON.stringify({
       title:article.title_original,summary:article.summary_original,published_at:article.published_at,
       source:source ? source.source_name : article.source_id,url:article.url,category:article.category,evidence:evidence})}],
     text:{format:{type:'json_schema',name:'ccc_article_evaluation',strict:true,schema:evaluationSchema_()}}};
+  return requestStructured_(body,c,deadline,onStart,'article='+article.article_id);
+}
+function requestStructured_(body,c,deadline,onStart,label) {
+  var key = PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');
+  if (!key) { var missing = new Error('OPENAI_API_KEY missing'); missing.stop = true; throw missing; }
+  if (!timeLeft_(deadline,45000)) { var late = new Error('Execution time budget reached'); late.stop = true; throw late; }
   var payload = JSON.stringify(body);
   // UTF-8 byte count + overhead is intentionally conservative; no cache discount is assumed.
   var maxInput = Utilities.newBlob(payload).getBytes().length + 1024;
-  var reserved = (maxInput*c.INPUT_USD_PER_MILLION*1.25+c.MAX_OUTPUT_TOKENS*c.OUTPUT_USD_PER_MILLION)/1000000;
+  var reserved = (maxInput*c.INPUT_USD_PER_MILLION*1.25+body.max_output_tokens*c.OUTPUT_USD_PER_MILLION)/1000000;
   var usage = usage_();
   if (usage.calls >= c.MAX_AI_ARTICLES_PER_DAY || usage.cost+reserved > c.MAX_AI_COST_USD_PER_MONTH) {
     var budget = new Error(usage.calls >= c.MAX_AI_ARTICLES_PER_DAY ? 'Daily AI limit reached' : 'Monthly AI budget reached');
@@ -42,7 +45,7 @@ function requestEvaluation_(article,source,evidence,c,deadline,onStart) {
     if (usage.cost+reserved > c.MAX_AI_COST_USD_PER_MONTH) notify_('AI_BUDGET',budget.message);
     throw budget;
   }
-  var ledger = log_('AI_REQUEST','RESERVED',1,0,reserved,'article='+article.article_id+' model='+c.OPENAI_MODEL);
+  var ledger = log_('AI_REQUEST','RESERVED',1,0,reserved,label+' model='+c.OPENAI_MODEL);
   SpreadsheetApp.flush();
   if (onStart) onStart();
   // Reservation survives timeout/process death. Retrying requires another reservation.
