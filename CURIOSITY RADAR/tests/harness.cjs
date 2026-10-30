@@ -44,7 +44,7 @@ function harness() {
     UrlFetchApp:{fetch:(...args)=>fetcher(...args)},
     MailApp:{getRemainingDailyQuota:()=>100},GmailApp:{sendEmail:(...args)=>{sent.push(args);}},
     ScriptApp:{WeekDay:{SUNDAY:'SUNDAY',MONDAY:'MONDAY'},getProjectTriggers:()=>triggers.slice(),deleteTrigger(t){triggers.splice(triggers.indexOf(t),1);},
-      newTrigger(handler){const b={timeBased(){return this;},inTimezone(){return this;},everyDays(){return this;},atHour(){return this;},onWeekDay(){return this;},everyHours(){return this;},create(){const id=crypto.randomUUID();const t={getHandlerFunction:()=>handler,getUniqueId:()=>id};triggers.push(t);return t;}};return b;}}};
+      newTrigger(handler){const b={timeBased(){return this;},inTimezone(){return this;},everyDays(){return this;},atHour(){return this;},onWeekDay(){return this;},everyHours(){return this;},everyMinutes(){return this;},create(){const id=crypto.randomUUID();const t={getHandlerFunction:()=>handler,getUniqueId:()=>id};triggers.push(t);return t;}};return b;}}};
   const context=vm.createContext(sandbox);
   sandbox.HtmlService={createTemplateFromFile(name){const template={data:null,evaluate(){
     const source=fs.readFileSync(path.join(root,'src',name+'.html'),'utf8');

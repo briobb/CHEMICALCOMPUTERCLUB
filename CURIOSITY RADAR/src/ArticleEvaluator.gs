@@ -26,13 +26,13 @@ function validateEvaluation_(v,evidence,article) {
 }
 function evaluatePendingArticles() { return withLock_(function() { return evaluatePending_(deadline_(),false); }); }
 function testArticleEvaluation() { return withLock_(function() { return evaluatePending_(deadline_(),true); }); }
-function evaluatePending_(deadline,test) {
+function evaluatePending_(deadline,test,sourceIds) {
   var c = settings_(), sources = rows_('SOURCES'), articles = rows_('ARTICLES'), done = 0;
   // Lock acquisition proves an old EVALUATING execution has ended. Preserve its spent attempt.
-  if (!test) articles.filter(function(a) { return a.ai_status==='EVALUATING'; }).forEach(function(a) {
+  if (!test) articles.filter(function(a) { return a.ai_status==='EVALUATING' && (!sourceIds || sourceIds.indexOf(a.source_id)>=0); }).forEach(function(a) {
     update_('ARTICLES',a,{ai_status:Number(a.ai_attempts)>=3?'FAILED':'PENDING',ai_error:'Previous execution interrupted'});
   });
-  var candidates = articles.filter(function(a) { return a.ai_status==='PENDING' && Number(a.ai_attempts || 0)<3; });
+  var candidates = articles.filter(function(a) { return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && a.ai_status==='PENDING' && Number(a.ai_attempts || 0)<3; });
   candidates.sort(function(a,b) { return primaryRank_(b)-primaryRank_(a) || String(b.published_at).localeCompare(String(a.published_at)); });
   var accepted = articles.filter(function(a) { return a.ai_status==='DONE'; });
   for (var i=0;i<candidates.length && timeLeft_(deadline,60000);i++) {

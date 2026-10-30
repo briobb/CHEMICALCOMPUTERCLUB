@@ -1,7 +1,7 @@
 function fetchAllFeeds() { return withLock_(function() { return fetchFeeds_(deadline_(),false); }); }
 function testFeedFetch() { return withLock_(function() { return fetchFeeds_(deadline_(),true); }); }
-function fetchFeeds_(deadline, dryRun) {
-  var c = settings_(), sources = rows_('SOURCES').filter(function(s) { return bool_(s.enabled); });
+function fetchFeeds_(deadline, dryRun, sourceIds) {
+  var c = settings_(), sources = rows_('SOURCES').filter(function(s) { return bool_(s.enabled) && (!sourceIds || sourceIds.indexOf(s.source_id)>=0); });
   sources.sort(function(a,b) { return String(a.last_checked).localeCompare(String(b.last_checked)); });
   var seen = new Set(rows_('ARTICLES').map(function(a) { return a.duplicate_key; })), total = 0, results = [];
   sources.forEach(function(s) {
