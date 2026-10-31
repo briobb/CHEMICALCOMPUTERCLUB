@@ -51,7 +51,7 @@ function harness() {
     let code='let out="";\n',last=0;const pattern=/<\?([=!]?)([\s\S]*?)\?>/g;let m;
     while((m=pattern.exec(source))){code+='out+='+JSON.stringify(source.slice(last,m.index))+';\n';code+=m[1]==='='?'out+=html_('+m[2]+');\n':m[1]==='!'?'out+=('+m[2]+');\n':m[2]+'\n';last=pattern.lastIndex;}
     code+='out+='+JSON.stringify(source.slice(last))+';\nout;';
-    context.data=this.data;const html=vm.runInContext(code,context);return {getContent:()=>html};}};return template;}};
+    context.data=this.data;const html=vm.runInContext("{"+code+"}",context);return {getContent:()=>html};}};return template;}};
   for(const file of fs.readdirSync(path.join(root,'src')).filter(f=>f.endsWith('.gs')))vm.runInContext(fs.readFileSync(path.join(root,'src',file),'utf8'),context,{filename:file});
   properties.set('ADMIN_EMAIL','owner@example.com'); properties.set('OPENAI_API_KEY','sk-test-not-real');
   context.setupSystem();

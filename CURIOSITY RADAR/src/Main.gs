@@ -6,6 +6,7 @@ function onOpen() {
     .addItem('一次評価のみ（最大10記事ずつ）','scorePendingArticles')
     .addSeparator().addItem('本日のニュース取得','fetchAllFeeds')
     .addItem('未評価記事処理','evaluatePendingArticles')
+    .addItem('要約済み記事を読む','previewSummarizedArticles')
     .addItem('週間レポートプレビュー','previewWeeklyReport')
     .addItem('週間レポートを確定','selectWeeklyArticles')
     .addItem('テストメール送信','sendTestReport')

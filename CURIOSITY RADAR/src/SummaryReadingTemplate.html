@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<base target="_blank">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f2e9;color:#242d28;font:15px/1.85 system-ui,-apple-system,sans-serif}main{max-width:820px;margin:auto;padding:28px 24px 56px}.brand{font:700 11px/1.5 monospace;letter-spacing:.18em;color:#47715c}h1{font-size:28px;margin:8px 0}header p{color:#59665e;margin:8px 0}.counts{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}.counts span{background:#e6eadf;border-radius:6px;padding:6px 12px}.counts strong{font-size:22px;margin-right:4px}input{width:100%;padding:12px 14px;border:1px solid #bbc5b8;border-radius:6px;background:#fff;font:inherit}#visible{font-size:13px;color:#647065}article{margin:18px 0;padding:24px;background:#fffdf7;border:1px solid #d7dccf;border-radius:8px}.meta{font-size:12px;color:#5c6a60;display:flex;gap:12px;flex-wrap:wrap}h2{font-size:22px;line-height:1.5;margin:12px 0}.summary{white-space:pre-wrap;line-height:2}.point{padding:12px 16px;background:#edf1e7;border-left:3px solid #65836e}.caution{font-size:13px;background:#f5f1e6;padding:12px 16px}.caution p{margin:4px 0}a{color:#275b42;text-underline-offset:3px}.empty{padding:30px 0;color:#59665e}[hidden]{display:none!important}
+</style>
+</head>
+<body><main>
+<header><div class="brand">CCC CURIOSITY RADAR / READING ROOM</div>
+<h1>要約済みの記事</h1>
+<p>保存済みの要約をスコア順に表示しています。掲載基準に届かなかった記事や送信済みの記事も含みます。</p>
+<div class="counts"><span>要約済み <strong><?= data.counts.done ?></strong>件</span><span>採点のみ <?= data.counts.scored ?>件</span><span>未処理・処理中 <?= data.counts.pending ?>件</span><span>評価失敗 <?= data.counts.failed ?>件</span></div>
+<p>表示するだけでは、追加のAI料金やメール送信は発生しません。</p>
+</header>
+<? if (data.articles.length) { ?>
+<label for="search">記事を検索</label><input id="search" type="search" placeholder="タイトル・要約・媒体名で絞り込み" autocomplete="off">
+<p id="visible" aria-live="polite"><?= data.articles.length ?>件を表示</p>
+<? } else { ?>
+<p class="empty">まだ要約が完了した記事はありません。採点のみの「SCORED」記事には、まだ要約がありません。</p>
+<? } ?>
+<? data.articles.forEach(function(a) { ?>
+<article>
+<div class="meta"><span><?= a.source ?></span><span><?= a.published ?></span><span><?= a.category ?></span><span><?= a.score ?> / 100点</span></div>
+<h2><?= a.title ?></h2><p class="summary"><?= a.summary ?></p>
+<? if (a.point) { ?><p class="point"><strong>面白いポイント</strong><br><?= a.point ?></p><? } ?>
+<div class="caution"><strong>信頼性：<?= a.reliability ?></strong><p><?= a.note ?></p><p>出典確認：<?= a.source_note ?></p></div>
+<? if (a.url) { ?><p><a href="<?= a.url ?>" target="_blank" rel="noopener noreferrer">元記事を読む ↗</a></p><? } ?>
+</article>
+<? }); ?>
+<script>
+var search=document.getElementById('search');
+if(search) search.addEventListener('input',function(){
+  var term=search.value.trim().toLocaleLowerCase(),visible=0;
+  document.querySelectorAll('article').forEach(function(card){card.hidden=card.textContent.toLocaleLowerCase().indexOf(term)<0;if(!card.hidden)visible++;});
+  document.getElementById('visible').textContent=visible+'件を表示';
+});
+</script>
+</main></body></html>
