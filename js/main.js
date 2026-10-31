@@ -18,6 +18,12 @@ navigation.addEventListener('click', (event) => {
 
 // Shared product and event detail modal
 const modal = document.querySelector('#detail-modal');
+const modalCloseIcon = document.createElement('button');
+modalCloseIcon.className = 'modal-close modal-close-action';
+modalCloseIcon.type = 'button';
+modalCloseIcon.setAttribute('aria-label', 'モーダルを閉じる');
+modalCloseIcon.textContent = '×';
+modal.prepend(modalCloseIcon);
 const modalTitle = document.querySelector('#modal-title');
 const modalCopy = document.querySelector('#modal-copy');
 const modalPrice = document.querySelector('#modal-price');
@@ -127,7 +133,9 @@ function closeModal() {
   document.body.classList.remove('modal-open');
   lastTrigger?.focus();
 }
-document.querySelector('.modal-close-action').addEventListener('click', closeModal);
+document.querySelectorAll('.modal-close-action').forEach((button) => {
+  button.addEventListener('click', closeModal);
+});
 modal.addEventListener('click', (event) => {
   if (event.target === modal) closeModal();
 });
