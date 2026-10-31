@@ -31,5 +31,18 @@ function resumeAllSourcesTest() {
 }
 function getAllSourcesTestStatus() {
   var state = fourSourceTestState_(true) || {status:'NOT_STARTED'};
+  try {
+    var articles=rows_('ARTICLES').filter(function(a) { return !state.source_ids || state.source_ids.indexOf(a.source_id)>=0; });
+    var counts={}, errors={};
+    articles.forEach(function(a) {
+      var status=String(a.ai_status || 'EMPTY'); counts[status]=(counts[status] || 0)+1;
+      if (a.ai_error) { var error=sanitize_(a.ai_error).slice(0,240); errors[error]=(errors[error] || 0)+1; }
+    });
+    var recent=rows_('LOGS').filter(function(r) { return ['AI_SCORE','AI_EVALUATE','AI_REQUEST','RESUME','ALL_SOURCES_TEST'].indexOf(r.process)>=0; }).slice(-5);
+    state.diagnostics={checked_at:iso_(),counts:counts,usage:usage_(),
+      exhausted_scored:articles.filter(function(a) { return a.ai_status==='SCORED' && Number(a.ai_attempts)>=3; }).length,
+      article_errors:Object.keys(errors).sort(function(a,b) { return errors[b]-errors[a]; }).slice(0,5).map(function(e) { return {error:e,count:errors[e]}; }),
+      recent_logs:recent.map(function(r) { return {timestamp:r.timestamp,process:r.process,status:r.status,error:sanitize_(r.error).slice(0,240)}; })};
+  } catch (e) { state.diagnostics_error=sanitize_(e); }
   console.log(JSON.stringify(state)); return state;
 }

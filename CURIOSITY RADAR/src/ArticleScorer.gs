@@ -74,6 +74,11 @@ function scorePending_(deadline,sourceIds) {
   return {scored:done,pending:candidates.length>0};
 }
 function evaluatePipeline_(deadline,sourceIds,period) {
+  rows_('ARTICLES').filter(function(a) {
+    return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && a.ai_status==='SCORED' && Number(a.ai_attempts)>=3;
+  }).forEach(function(a) {
+    update_('ARTICLES',a,{ai_status:'FAILED',ai_error:a.ai_error || 'Detailed evaluation attempt limit reached'});
+  });
   var score=scorePending_(deadline,sourceIds);
   if (score.pending || score.stopped) return score;
   // Recover interrupted detailed evaluation, preserving the spent attempt.

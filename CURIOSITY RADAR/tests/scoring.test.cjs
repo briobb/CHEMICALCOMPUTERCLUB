@@ -8,6 +8,20 @@ function seed(h,n) {
 }
 function score(a,high=true) {return {article_id:a.article_id,category:'NATURE',curiosity_score:high?30:1,brand_score:high?20:1,talkability_score:high?18:1,story_score:high?9:1,uniqueness_score:high?8:1,total_score:high?85:5};}
 function period() {return {start:new Date(Date.now()-14*86400000),end:new Date()};}
+test('exhausted scored articles cannot keep the pipeline pending indefinitely',()=>{
+  const h=harness(),{c}=h;seed(h,1);
+  c.update_('ARTICLES',c.rows_('ARTICLES')[0],{ai_status:'SCORED',ai_attempts:3});
+  const result=c.evaluatePipeline_(c.deadline_(),null,period());
+  assert.equal(result.pending,false);assert.equal(c.rows_('ARTICLES')[0].ai_status,'FAILED');assert.equal(c.usage_().calls,0);
+});
+test('status diagnostics report progress without changing state or calling AI',()=>{
+  const h=harness(),{c}=h;seed(h,2);c.saveFourSourceTest_({status:'FAILED',source_ids:['SRC0','SRC1']},true);
+  c.update_('ARTICLES',c.rows_('ARTICLES')[0],{ai_status:'SCORED',ai_attempts:3,ai_error:'Example failure'});
+  const before=JSON.stringify(c.fourSourceTestState_(true)), logs=JSON.stringify(c.rows_('LOGS'));
+  const d=c.getAllSourcesTestStatus().diagnostics;
+  assert.equal(d.counts.SCORED,1);assert.equal(d.counts.PENDING,1);assert.equal(d.exhausted_scored,1);
+  assert.equal(JSON.stringify(c.fourSourceTestState_(true)),before);assert.equal(JSON.stringify(c.rows_('LOGS')),logs);assert.equal(h.sent.length,0);
+});
 test('204 articles use 21 scoring requests; only selected candidates receive detailed summaries',()=>{
   const h=harness(),{c}=h;seed(h,204);let scores=0,details=0;
   c.setSetting_('CATEGORY_MAX',10);c.setSetting_('SOURCE_MAX',10);
