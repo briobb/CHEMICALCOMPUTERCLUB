@@ -31,6 +31,8 @@ function requestEvaluation_(article,source,evidence,c,deadline,onStart) {
   return requestStructured_(body,c,deadline,onStart,'article='+article.article_id);
 }
 function requestStructured_(body,c,deadline,onStart,label) {
+  var blocked=PropertiesService.getScriptProperties().getProperty('AI_BILLING_BLOCK');
+  if (blocked) { var paused=new Error('OpenAI billing paused: '+blocked); paused.stop=true; throw paused; }
   var key = PropertiesService.getScriptProperties().getProperty('OPENAI_API_KEY');
   if (!key) { var missing = new Error('OPENAI_API_KEY missing'); missing.stop = true; throw missing; }
   if (!timeLeft_(deadline,45000)) { var late = new Error('Execution time budget reached'); late.stop = true; throw late; }
@@ -59,7 +61,19 @@ function requestStructured_(body,c,deadline,onStart,label) {
   if (code!==200) {
     // Do not log server response bodies, request headers or API keys.
     update_('LOGS',ledger,{status:'HTTP_'+code});
-    var err = new Error('OpenAI HTTP '+code); err.retryable = code===429 || code>=500;
+    var detail='';
+    try {
+      var failure=JSON.parse(response.getContentText()).error || {};
+      var allowed=['insufficient_quota','credit_balance_exhausted','organization_spend_limit_exceeded','project_spend_limit_exceeded','organization_usage_limit_exceeded','rate_limit_exceeded','slow_down'];
+      if (allowed.indexOf(failure.code)>=0) detail=failure.code;
+      else if (failure.type==='insufficient_quota') detail=failure.type;
+    } catch (_) {}
+    var err = new Error('OpenAI HTTP '+code+(detail?' ['+detail+']':'')); err.retryable = code===429 || code>=500;
+    if (code===429 && detail && ['rate_limit_exceeded','slow_down'].indexOf(detail)<0) {
+      PropertiesService.getScriptProperties().setProperty('AI_BILLING_BLOCK',detail);
+      err.stop=true; err.retryable=false;
+    }
+    if (detail) update_('LOGS',ledger,{error:label+' model='+c.OPENAI_MODEL+' code='+detail});
     var headers = response.getAllHeaders(), retryAfter = headers['Retry-After'] || headers['retry-after'];
     err.waitMs = /^\d+$/.test(String(retryAfter)) ? Math.min(Number(retryAfter)*1000,30000) : 0;
     if (code===401 || code===403) { err.stop = true; notify_('AI_AUTH','OpenAI認証に失敗しました。Script PropertiesとAPI権限を確認してください。'); }

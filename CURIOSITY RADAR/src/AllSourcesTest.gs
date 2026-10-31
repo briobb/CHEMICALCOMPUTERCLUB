@@ -1,6 +1,33 @@
 // Uses the SOURCES rows enabled by the administrator. Does not change their settings.
 function startAllSourcesTest() { return startSourceTest_(true); }
 function continueAllSourcesTest() { return continueSourceTest_(true); }
+// Explicit recovery after the administrator has replaced the key / replenished credit.
+function recoverAfterBillingFix() {
+  var result=withLock_(function() {
+    adminEmail_(); settings_();
+    var state=fourSourceTestState_(true);
+    if (!state || state.status!=='FAILED' || state.sent_at) throw new Error('Only a failed unsent test can be recovered');
+    var ids=fourSourceTestSources_(true);
+    if (ids.join(',')!==state.source_ids.join(',')) throw new Error('Enabled sources changed; inspect test status before recovery');
+    var other=fourSourceTestState_(false);
+    if (other && ['FETCH','EVALUATE','SENDING','UNKNOWN'].indexOf(other.status)>=0) throw new Error('Another test is active or delivery is unknown');
+    var recovered=0;
+    rows_('ARTICLES').filter(function(a) {
+      return ids.indexOf(a.source_id)>=0 && a.ai_status==='FAILED' && /^OpenAI HTTP (401|429)(?:\s|$)/.test(String(a.ai_error));
+    }).forEach(function(a) {
+      update_('ARTICLES',a,{ai_status:'PENDING',ai_attempts:0,ai_error:''}); recovered++;
+    });
+    SpreadsheetApp.flush();
+    PropertiesService.getScriptProperties().deleteProperty('AI_BILLING_BLOCK');
+    log_('BILLING_RECOVERY','READY',recovered,0,0,'Only failed 401/429 articles reset; usage ledger retained');
+    return {status:'READY',recovered:recovered};
+  });
+  console.log(JSON.stringify(result));
+  if (result.status==='READY') {
+    var resumed=resumeAllSourcesTest(); console.log(JSON.stringify(resumed)); return resumed;
+  }
+  return result;
+}
 function resumeAllSourcesTest() {
   var result = withLock_(function() {
     var c = settings_(); adminEmail_();
