@@ -52,3 +52,42 @@ ScienceDailyの[利用条件](https://www.sciencedaily.com/terms.htm)はRSSデ�
 | IEEE Spectrum | HTTP 200、RSS 30件 | 公式トップからリンクされた[利用条件](https://www.ieee.org/about/help/site-terms-conditions.html)は本文を取得できず（直接取得はHTTP 202、本文0バイト）。条件未確認のため保留。禁止が確認されたという意味ではない。 |
 
 RSSが公開されていることと、今回の保存・加工方法が条件に適合することは別に確認しています。この記録は個人による要約一般を違法と断定するものではありません。今回の調査ではOpenAI APIによる評価・要約やメール送信は実行していません。
+
+## 2026-11-01：添付の日本語ソース一覧
+
+`CCC_RADIO_RSS_sources.xlsx` の「RSS情報源」27件を確認。既存のPhys.orgは重複登録せず、26件を追加する `importRadioSources()` を用意しました。取得・XML確認済み20件をTRUE、未確認または解析不可6件をFALSEで追加します。既存行の設定は上書きしません。Google側のSOURCESへの反映は、この関数の実行時です。
+
+以下はこの環境での技術的な取得確認であり、保存・AI加工の利用許諾を確認したという意味ではありません。GASからの実取得は次回の収集ログで確認してください。URLを推測して有効化したり、アクセス制限を回避したりはしていません。
+
+| 情報源 | 登録するフィード | 状態 |
+| --- | --- | --- |
+| sorae | [https://sorae.info/feed](https://sorae.info/feed) | TRUE：HTTP 200・XML確認 |
+| カラパイア | [https://karapaia.com/feed](https://karapaia.com/feed) | TRUE：HTTP 200・XML確認 |
+| ナゾロジー | [https://nazology.kusuguru.co.jp/feed](https://nazology.kusuguru.co.jp/feed) | TRUE：HTTP 200・XML確認 |
+| webムー | [https://web-mu.jp/feed/](https://web-mu.jp/feed/) | TRUE：HTTP 200・XML確認 |
+| 4Gamer 注目記事 | [https://www.4gamer.net/rss/news_topics.xml](https://www.4gamer.net/rss/news_topics.xml) | TRUE：HTTP 200・XML確認 |
+| 4Gamer アナログゲーム | [https://www.4gamer.net/tags/TS/TS020/contents.xml](https://www.4gamer.net/tags/TS/TS020/contents.xml) | TRUE：HTTP 200・XML確認 |
+| 4Gamer アーケード | [https://www.4gamer.net/rss/arcade/arcade_news.xml](https://www.4gamer.net/rss/arcade/arcade_news.xml) | TRUE：HTTP 200・XML確認 |
+| GAME Watch | [https://game.watch.impress.co.jp/data/rss/1.0/gmw/feed.rdf](https://game.watch.impress.co.jp/data/rss/1.0/gmw/feed.rdf) | TRUE：HTTP 200・XML確認 |
+| AKIBA PC Hotline! | [https://akiba-pc.watch.impress.co.jp/data/rss/1.0/ah/feed.rdf](https://akiba-pc.watch.impress.co.jp/data/rss/1.0/ah/feed.rdf) | TRUE：HTTP 200・XML確認 |
+| ギズモード・ジャパン | [https://www.gizmodo.jp/feed/index.xml](https://www.gizmodo.jp/feed/index.xml) | TRUE：HTTP 200・XML確認 |
+| ナショナル ジオグラフィック日本版 | 未確認（[公式サイト](https://natgeo.nikkeibp.co.jp/)） | FALSE：RSS URL未確認 |
+| 国立天文台 | [https://www.nao.ac.jp/atom.xml](https://www.nao.ac.jp/atom.xml) | TRUE：HTTP 200・XML確認 |
+| ボドゲーマ | [https://bodoge.hoobby.net/feed.rss](https://bodoge.hoobby.net/feed.rss) | FALSE：XML解析不可 |
+| ゲームマーケット | 未確認（[公式サイト](https://gamemarket.jp/)） | FALSE：RSS URL未確認 |
+| JST 科学技術振興機構 | [https://www.jst.go.jp/rss/press.xml](https://www.jst.go.jp/rss/press.xml) | TRUE：HTTP 200・XML確認 |
+| Preferred Networks | 未確認（[公式サイト](https://www.preferred.jp/)） | FALSE：RSS URL未確認 |
+| 量子科学技術研究開発機構 | [https://www.qst.go.jp/rss/10/list7.xml](https://www.qst.go.jp/rss/10/list7.xml) | TRUE：HTTP 200・XML確認 |
+| 講談社サイエンティフィク | 未確認（[公式サイト](https://www.kspub.co.jp/)） | FALSE：RSS URL未確認 |
+| オーム社 | 未確認（[公式サイト](https://www.ohmsha.co.jp/)） | FALSE：RSS URL未確認 |
+| GIGAZINE | [https://gigazine.net/news/rss_2.0/](https://gigazine.net/news/rss_2.0/) | TRUE：HTTP 200・XML確認 |
+| ITmedia NEWS | [https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml](https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml) | TRUE：HTTP 200・XML確認 |
+| Science Portal | [https://scienceportal.jst.go.jp/feed/rss.xml](https://scienceportal.jst.go.jp/feed/rss.xml) | TRUE：HTTP 200・XML確認 |
+| MIT Technology Review 日本版 | [https://www.technologyreview.jp/feed/](https://www.technologyreview.jp/feed/) | TRUE：HTTP 200・XML確認 |
+| WIRED 日本版 | [https://wired.jp/feed/rss](https://wired.jp/feed/rss) | TRUE：HTTP 200・XML確認 |
+| PC Watch | [https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf](https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf) | TRUE：HTTP 200・XML確認 |
+| INTERNET Watch | [https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf](https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf) | TRUE：HTTP 200・XML確認 |
+
+主な補完元：[ITmedia公式RSS一覧](https://corp.itmedia.co.jp/media/rss_list/)、[QSTプレスリリース](https://www.qst.go.jp/site/press/index.html)、各公式トップのRSS/Atomリンク。Science Portalは更新が古い `rsslatest.xml` ではなく、更新を確認できた `feed/rss.xml` を採用。webムーはPythonの証明書検証で取得できなかったため、通常の証明書検証を有効にしたcurlでHTTP 200・RSS 10件を確認しました。
+
+添付の優先度・メモ・公式サイトURLは `RADIO_SOURCE_CATALOG.json` に保存しています。優先度を採点への加点には使っていません。ゲーム系は既存8カテゴリのCOMPUTING／INVENTIONを初期分類とし、記事内容でAIが分類します。4Gamerの3フィードは同じ媒体として掲載上限を適用します。

@@ -1,4 +1,7 @@
-function publisher_(a) { return a.source_id.replace(/_(HISTORY|RETRO|NEURO|RESEARCH)$/,''); }
+function publisher_(a) {
+  if (a.source_id.indexOf('FOURGAMER_')===0) return 'FOURGAMER';
+  return a.source_id.replace(/_(HISTORY|RETRO|NEURO|RESEARCH)$/,'');
+}
 function chooseArticles_(articles,reports,period,c,rankingOnly) {
   var reserved = new Set();
   reports.forEach(function(r) {

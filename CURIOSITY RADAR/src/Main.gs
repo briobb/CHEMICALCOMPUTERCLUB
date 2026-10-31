@@ -1,6 +1,7 @@
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('CCC RADAR')
     .addItem('初期セットアップ','setupSystem')
+    .addItem('日本語ソース一覧を追加','importRadioSources')
     .addItem('RSS取得テスト（保存なし）','testFeedFetch')
     .addItem('AI評価テスト（1記事・API料金あり）','testArticleEvaluation')
     .addItem('一次評価のみ（最大10記事ずつ）','scorePendingArticles')
