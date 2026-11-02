@@ -3,6 +3,7 @@ function publisher_(a) {
   return a.source_id.replace(/_(HISTORY|RETRO|NEURO|RESEARCH)$/,'');
 }
 function chooseArticles_(articles,reports,period,c,rankingOnly) {
+  if (c.READING_MODE) return chooseReadingArticles_(articles,reports,period,c);
   var reserved = new Set();
   reports.forEach(function(r) {
     // Even FAILED/UNKNOWN frozen reports reserve their articles to prevent overlapping issues.
@@ -44,6 +45,10 @@ function finalizeReport_(now) {
   var issue = reports.reduce(function(n,r) { return Math.max(n,Number(r.issue_number)||0); },0)+1;
   var data = reportData_(articles,period,issue,c);
   var snapshot = JSON.stringify(data);
+  // Keep oversized reading issues within the Sheets cell limit; remaining articles stay unread.
+  while (c.READING_MODE && snapshot.length>45000 && articles.length>1) {
+    articles.pop(); data=reportData_(articles,period,issue,c); snapshot=JSON.stringify(data);
+  }
   if (snapshot.length>45000) throw new Error('Report snapshot exceeds sheet cell limit');
   var report = append_('REPORTS',[{report_id:period.id,issue_number:issue,period_start:iso_(period.start),
     period_end:iso_(period.end),article_ids:JSON.stringify(articles.map(function(a) { return a.article_id; })),

@@ -1,5 +1,5 @@
-function validateEvaluation_(v,evidence,article) {
-  var schema = evaluationSchema_();
+function validateEvaluation_(v,evidence,article,reading) {
+  var schema = evaluationSchema_(reading);
   if (!v || typeof v!=='object' || Array.isArray(v) || Object.keys(v).length!==schema.required.length) throw new Error('Evaluation fields mismatch');
   schema.required.forEach(function(k) {
     if (!(k in v)) throw new Error('Missing evaluation field: '+k);
@@ -8,11 +8,13 @@ function validateEvaluation_(v,evidence,article) {
     if (type==='boolean' && typeof v[k]!=='boolean') throw new Error('Invalid boolean: '+k);
   });
   var limits = {curiosity_score:35,brand_score:25,talkability_score:20,story_score:10,uniqueness_score:10}, sum = 0;
-  Object.keys(limits).forEach(function(k) { if (!Number.isInteger(v[k]) || v[k]<0 || v[k]>limits[k]) throw new Error('Score out of range: '+k); sum += v[k]; });
-  if (!Number.isInteger(v.total_score) || v.total_score!==sum) throw new Error('Score sum mismatch');
+  if (!reading) {
+    Object.keys(limits).forEach(function(k) { if (!Number.isInteger(v[k]) || v[k]<0 || v[k]>limits[k]) throw new Error('Score out of range: '+k); sum += v[k]; });
+    if (!Number.isInteger(v.total_score) || v.total_score!==sum) throw new Error('Score sum mismatch');
+  }
   if (RADAR.categories.indexOf(v.category)<0 || RADAR.reliability.indexOf(v.reliability)<0) throw new Error('Unknown category/reliability');
   var length = Array.from(v.summary_ja).length;
-  if (length<200 || length>300) throw new Error('Japanese summary must be 200–300 characters');
+  if (length<(reading?50:200) || length>(reading?600:300)) throw new Error(reading?'Japanese summary must be 50–600 characters':'Japanese summary must be 200–300 characters');
   if (!/[\u3040-\u30ff\u4e00-\u9fff]/.test(v.summary_ja)) throw new Error('Japanese summary required');
   if (!Array.isArray(v.keywords) || v.keywords.length<1 || v.keywords.length>8 || v.keywords.some(function(k) { return typeof k!=='string' || k.length>60; })) throw new Error('Invalid keywords');
   if (v.title_ja.length>120 || v.interesting_point.length>300 || !/^[A-Za-z0-9 &:'-]{3,60}$/.test(v.section_title)) throw new Error('Editorial fields too long or invalid');
@@ -33,7 +35,8 @@ function evaluatePending_(deadline,test,sourceIds,articleIds) {
     update_('ARTICLES',a,{ai_status:Number(a.ai_attempts)>=3?'FAILED':a.ai_status==='SUMMARIZING'?'SCORED':'PENDING',ai_error:'Previous execution interrupted'});
   });
   var candidates = articles.filter(function(a) { return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && (articleIds ? articleIds.indexOf(a.article_id)>=0 && a.ai_status==='SCORED' : a.ai_status==='PENDING') && Number(a.ai_attempts || 0)<3; });
-  candidates.sort(function(a,b) { return primaryRank_(b)-primaryRank_(a) || String(b.published_at).localeCompare(String(a.published_at)); });
+  if (c.READING_MODE && articleIds) candidates.sort(function(a,b) { return articleIds.indexOf(a.article_id)-articleIds.indexOf(b.article_id); });
+  else candidates.sort(function(a,b) { return primaryRank_(b)-primaryRank_(a) || String(b.published_at).localeCompare(String(a.published_at)); });
   var accepted = articles.filter(function(a) { return a.ai_status==='DONE'; });
   for (var i=0;i<candidates.length && timeLeft_(deadline,60000);i++) {
     var a = candidates[i];
@@ -49,9 +52,9 @@ function evaluatePending_(deadline,test,sourceIds,articleIds) {
           attempts++;
           if (!test) { update_('ARTICLES',a,{ai_status:articleIds?'SUMMARIZING':'EVALUATING',ai_attempts:attempts}); SpreadsheetApp.flush(); }
         });
-        validateEvaluation_(result,evidence,a);
+        validateEvaluation_(result,evidence,a,c.READING_MODE);
         if (test) { log_('AI_TEST','OK',1,0,0,'No article/history updated'); console.log(JSON.stringify(result)); return result; }
-        update_('ARTICLES',a,Object.assign({},result,{keywords:JSON.stringify(result.keywords),ai_status:'DONE',ai_error:'',
+        update_('ARTICLES',a,Object.assign({},result,{keywords:JSON.stringify(result.keywords),ai_status:'DONE',ai_error:'',updated_at:iso_(),
           evidence_url:evidence.url,evidence_excerpt:evidence.excerpt.slice(0,800),evidence_checked_at:evidence.checked_at}));
         accepted.push(a); done++; break;
       } catch (e) {

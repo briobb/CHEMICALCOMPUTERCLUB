@@ -55,6 +55,8 @@ function harness() {
   for(const file of fs.readdirSync(path.join(root,'src')).filter(f=>f.endsWith('.gs')))vm.runInContext(fs.readFileSync(path.join(root,'src',file),'utf8'),context,{filename:file});
   properties.set('ADMIN_EMAIL','owner@example.com'); properties.set('OPENAI_API_KEY','sk-test-not-real');
   context.setupSystem();
+  // Existing suites exercise the explicitly supported legacy scoring mode.
+  context.setSetting_('READING_MODE',false);
   return {c:context,sheets,properties,sent,triggers,setFetcher:f=>{fetcher=f;},lock:()=>{held=true;},unlock:()=>{held=false;},
     response:(code,body,headers={})=>({getResponseCode:()=>code,getContentText:()=>typeof body==='string'?body:JSON.stringify(body),getAllHeaders:()=>headers})};
 }

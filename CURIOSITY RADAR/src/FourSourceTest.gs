@@ -88,7 +88,7 @@ function continueSourceTest_(all) {
       var chosen = chooseArticles_(articles,rows_('REPORTS'),period,c);
       if (!chosen.length) throw new Error((result.stopped ? sanitize_(result.stopped)+'; ' : '')+'No articles met the production selection criteria; no empty email sent');
       var rendered = renderReport_(reportData_(chosen,period,0,c));
-      var note = (all ? state.source_ids.length+'情報源' : '4情報源')+'の実データによるテストです。直近14日間を対象に、本番と同じ採点・要約・掲載基準を使用しています。';
+      var note = (all ? state.source_ids.length+'情報源' : '4情報源')+'の実データによるテストです。直近14日間を対象に、'+(c.READING_MODE?'採点なしで要約済みの記事を掲載しています。裏付け未確認の記事には注記しています。':'本番と同じ採点・要約・掲載基準を使用しています。');
       if (all) {
         var errors=state.fetch_results.filter(function(r) { return r.error; });
         note += ' RSS取得成功 '+ids.length+'媒体、失敗 '+errors.length+'媒体。';

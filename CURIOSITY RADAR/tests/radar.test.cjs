@@ -77,13 +77,13 @@ test('mail sends once; SENT recovery repairs article flags without another email
   c.update_('ARTICLES',c.rows_('ARTICLES')[0],{delivery_status:'NEW'});c.sendReport_(monday);assert.equal(sent.length,1);assert.equal(c.rows_('ARTICLES')[0].delivery_status,'DELIVERED');
 });
 test('ambiguous Gmail exception or durable SENDING never causes automatic redelivery',()=>{
-  const h=harness(),{c}=h;c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));let reportCalls=0;
+  const h=harness(),{c}=h;c.append_("ARTICLES",[article("mail")]);c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));let reportCalls=0;
   c.GmailApp.sendEmail=(to,subject)=>{if(subject.startsWith('CCC CURIOSITY REPORT')){reportCalls++;throw new Error('Transport outcome unknown');}};
   const monday=new Date('2026-11-01T23:30:00Z');assert.equal(c.sendReport_(monday).status,'UNKNOWN');c.sendReport_(monday);assert.equal(reportCalls,1);
   c.update_('REPORTS',c.rows_('REPORTS')[0],{status:'SENDING'});assert.equal(c.sendReport_(monday).status,'UNKNOWN');assert.equal(reportCalls,1);
 });
 test('preflight quota failure is FAILED and can be retried without duplicating mail',()=>{
-  const {c,sent}=harness();c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));const monday=new Date('2026-11-01T23:30:00Z');
+  const {c,sent}=harness();c.append_("ARTICLES",[article("mail")]);c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));const monday=new Date('2026-11-01T23:30:00Z');
   c.MailApp.getRemainingDailyQuota=()=>0;assert.throws(()=>c.sendReport_(monday));assert.equal(c.rows_('REPORTS')[0].status,'FAILED');
   c.MailApp.getRemainingDailyQuota=()=>100;c.sendReport_(monday);assert.equal(sent.length,1);
 });
@@ -135,7 +135,7 @@ test('Sheets grid expands beyond default columns and row capacity',()=>{
   assert.ok(sheets.get('LOGS').getMaxRows()>1000);assert.equal(c.rows_('LOGS').filter(r=>r.process==='GRID').length,1010);
 });
 test('Gmail success followed by status-write failure leaves SENDING and never sends twice',()=>{
-  const {c,sent}=harness();c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));const original=c.update_;
+  const {c,sent}=harness();c.append_("ARTICLES",[article("mail")]);c.finalizeReport_(new Date('2026-11-01T14:00:00Z'));const original=c.update_;
   c.update_=(name,row,changes)=>{if(name==='REPORTS'&&changes.status==='SENT')throw new Error('Sheets unavailable after Gmail success');return original(name,row,changes);};
   const monday=new Date('2026-11-01T23:30:00Z');assert.throws(()=>c.sendReport_(monday));assert.equal(c.rows_('REPORTS')[0].status,'SENDING');
   c.update_=original;c.sendReport_(monday);assert.equal(c.rows_('REPORTS')[0].status,'UNKNOWN');

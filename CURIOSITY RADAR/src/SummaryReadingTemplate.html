@@ -11,7 +11,7 @@
 <body><main>
 <header><div class="brand">CCC CURIOSITY RADAR / READING ROOM</div>
 <h1>要約済みの記事</h1>
-<p>保存済みの要約をスコア順に表示しています。掲載基準に届かなかった記事や送信済みの記事も含みます。</p>
+<p>保存済みの要約を<?= data.reading?'新しい記事から':'スコア順に' ?>表示しています。送信済みの記事も含みます。</p>
 <div class="counts"><span>要約済み <strong><?= data.counts.done ?></strong>件</span><span>採点のみ <?= data.counts.scored ?>件</span><span>未処理・処理中 <?= data.counts.pending ?>件</span><span>評価失敗 <?= data.counts.failed ?>件</span></div>
 <p>表示するだけでは、追加のAI料金やメール送信は発生しません。</p>
 </header>
@@ -23,7 +23,7 @@
 <? } ?>
 <? data.articles.forEach(function(a) { ?>
 <article>
-<div class="meta"><span><?= a.source ?></span><span><?= a.published ?></span><span><?= a.category ?></span><span><?= a.score ?> / 100点</span></div>
+<div class="meta"><span><?= a.source ?></span><span><?= a.published ?></span><span><?= a.category ?></span><? if (!data.reading) { ?><span><?= a.score ?> / 100点</span><? } ?></div>
 <h2><?= a.title ?></h2><p class="summary"><?= a.summary ?></p>
 <? if (a.point) { ?><p class="point"><strong>面白いポイント</strong><br><?= a.point ?></p><? } ?>
 <div class="caution"><strong>信頼性：<?= a.reliability ?></strong><p><?= a.note ?></p><p>出典確認：<?= a.source_note ?></p></div>

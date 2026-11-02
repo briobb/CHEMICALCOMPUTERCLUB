@@ -1,10 +1,11 @@
 function reportData_(articles,period,issue,c) {
+  if (c.READING_MODE) period=readingPeriod_(period);
   var names = {}; rows_('SOURCES').forEach(function(s) { names[s.source_id]=s.source_name; });
   return {report_id:period.id,issue_number:issue,date:day_(period.end).replace(/-/g,'.'),
-    period_start:day_(period.start),period_end:day_(period.end.getTime()-1),show_score:c.SHOW_ADMIN_SCORE,
+    period_start:day_(period.start),period_end:day_(period.end.getTime()-1),show_score:c.SHOW_ADMIN_SCORE && !c.READING_MODE,
     articles:articles.map(function(a) { return {article_id:a.article_id,source:names[a.source_id] || a.source_id,
       title:a.title_ja,summary:a.summary_ja,point:a.interesting_point,section:a.section_title,
-      reliability:a.reliability,note:a.reliability_note,source_note:a.source_note,
+      reliability:c.READING_MODE?readingReliability_(a):a.reliability,note:c.READING_MODE?readingNote_(a):a.reliability_note,source_note:a.source_note,
       url:safeUrl_(a.url),score:Number(a.total_score)}; })};
 }
 function previewData_() {

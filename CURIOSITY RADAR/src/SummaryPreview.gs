@@ -9,11 +9,12 @@ function summaryPreviewData_() {
   });
   var articles=rows.filter(function(a) { return a.ai_status==='DONE' && String(a.summary_ja || '').trim(); });
   counts.done=articles.length;
-  articles.sort(function(a,b) { return Number(b.total_score)-Number(a.total_score) || String(b.published_at).localeCompare(String(a.published_at)); });
-  return {counts:counts,articles:articles.map(function(a) {
+  var reading=settings_().READING_MODE;
+  articles.sort(function(a,b) { return (reading?0:Number(b.total_score)-Number(a.total_score)) || String(b.published_at).localeCompare(String(a.published_at)); });
+  return {counts:counts,reading:reading,articles:articles.map(function(a) {
     var url=''; try { url=safeUrl_(a.url); } catch (_) { /* Do not render unsafe links. */ }
     return {title:a.title_ja || a.title_original,summary:a.summary_ja,source:names[a.source_id] || a.source_id,
-      score:Number(a.total_score),category:a.category,reliability:a.reliability,note:a.reliability_note,
+      score:Number(a.total_score),category:a.category,reliability:reading?readingReliability_(a):a.reliability,note:reading?readingNote_(a):a.reliability_note,
       point:a.interesting_point,source_note:a.source_note,url:url,
       published:date_(a.published_at)?day_(a.published_at):'公開日不明'};
   })};

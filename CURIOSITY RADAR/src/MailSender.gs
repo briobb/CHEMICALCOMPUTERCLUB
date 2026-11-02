@@ -16,6 +16,11 @@ function sendReport_(now) {
     if (MailApp.getRemainingDailyQuota()<1) throw new Error('Gmail daily recipient quota exhausted');
     rendered = renderReport_(JSON.parse(report.snapshot_json));
     if (rendered.data.report_id!==report.report_id) throw new Error('Snapshot ID mismatch');
+    if (!rendered.data.articles.length) {
+      update_('REPORTS',report,{status:'EMPTY',error:'No completed articles; digest not sent'});
+      log_('MAIL','EMPTY',0,0,0,'No completed articles; check AI_SUMMARY / AI_EVALUATE logs');
+      return {status:'EMPTY',article_count:0};
+    }
   } catch (e) {
     update_('REPORTS',report,{status:'FAILED',error:sanitize_(e)}); notify_('MAIL_PRECHECK',sanitize_(e)); throw e;
   }

@@ -74,6 +74,7 @@ function scorePending_(deadline,sourceIds) {
   return {scored:done,pending:candidates.length>0};
 }
 function evaluatePipeline_(deadline,sourceIds,period) {
+  if (settings_().READING_MODE) return summarizeReadingQueue_(deadline,sourceIds,period);
   rows_('ARTICLES').filter(function(a) {
     return (!sourceIds || sourceIds.indexOf(a.source_id)>=0) && a.ai_status==='SCORED' && Number(a.ai_attempts)>=3;
   }).forEach(function(a) {

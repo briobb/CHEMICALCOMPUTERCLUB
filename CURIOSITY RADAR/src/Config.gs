@@ -4,6 +4,7 @@ var RADAR = {
   categories: ['SPACE','COMPUTING','NEURO','ARCHAEOLOGY','MYSTERY','RETRO','INVENTION','NATURE'],
   reliability: ['VERIFIED','PRELIMINARY','SPECULATIVE','DISPUTED','UNVERIFIED'],
   defaults: {
+    READING_MODE: true, DAILY_SUMMARY_LIMIT: 20, READING_REPORT_COUNT: 30,
     TIMEZONE: 'Asia/Tokyo', REPORT_DAY: 'MONDAY', REPORT_HOUR: 8,
     REPORT_COUNT: 10, MIN_SCORE: 70, RETRO_TARGET: 2, SOURCE_MAX: 3,
     MAX_AI_ARTICLES_PER_DAY: 50, MAX_AI_COST_USD_PER_MONTH: 5,
@@ -25,7 +26,11 @@ var RADAR = {
 function settings_() {
   var c = Object.assign({}, RADAR.defaults);
   rows_('SETTINGS').forEach(function(r) { if (r.key in c) c[r.key] = r.value; });
-  ['SHOW_ADMIN_SCORE','AUTOMATION_ENABLED','PRIMARY_EXCERPTS_ENABLED'].forEach(function(k) { c[k] = bool_(c[k]); });
+  ['SHOW_ADMIN_SCORE','AUTOMATION_ENABLED','PRIMARY_EXCERPTS_ENABLED','READING_MODE'].forEach(function(k) { c[k] = bool_(c[k]); });
+  ['DAILY_SUMMARY_LIMIT','READING_REPORT_COUNT'].forEach(function(k) {
+    c[k]=Number(c[k]);
+    if (!Number.isInteger(c[k]) || c[k]<1 || c[k]>50) throw new Error('Invalid setting: '+k);
+  });
   ['REPORT_HOUR','REPORT_COUNT','MIN_SCORE','RETRO_TARGET','SOURCE_MAX','MAX_AI_ARTICLES_PER_DAY',
     'MAX_AI_COST_USD_PER_MONTH','INPUT_USD_PER_MILLION','OUTPUT_USD_PER_MILLION','MAX_OUTPUT_TOKENS',
     'CATEGORY_MAX','FINALIZE_HOUR','MAX_FEED_ITEMS'].forEach(function(k) {
