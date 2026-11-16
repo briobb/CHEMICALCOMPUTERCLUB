@@ -74,6 +74,11 @@ const PRODUCTS = Object.freeze({
     name: "CCC Sports L/S T",
     price: 6600,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "logo-sweat": {
+    name: "CCC Logo Sweat",
+    price: 6600,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
