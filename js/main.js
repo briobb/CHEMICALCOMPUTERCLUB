@@ -40,6 +40,7 @@ const productQuantity = document.querySelector('#product-quantity');
 const addToCartButton = document.querySelector('#add-to-cart');
 let lastTrigger;
 let currentProduct = null;
+const isSizeChart = (imagePath = '') => /(?:^|\/)size[-_]/i.test(imagePath);
 
 function openModal(trigger) {
   const source = trigger.closest('[data-modal-title]');
@@ -74,8 +75,10 @@ function openModal(trigger) {
   if (source.dataset.modalImage) {
     modalImage.src = source.dataset.modalImage;
     modalImage.alt = `${source.dataset.modalTitle}の拡大画像`;
+    modalImage.classList.toggle('is-size-chart', isSizeChart(source.dataset.modalImage));
     modalImage.hidden = false;
   } else {
+    modalImage.classList.remove('is-size-chart');
     modalImage.hidden = true;
   }
   modalGallery.replaceChildren();
@@ -92,6 +95,7 @@ function openModal(trigger) {
     primaryButton.addEventListener('click', () => {
       modalImage.src = source.dataset.modalImage;
       modalImage.alt = primaryImage.alt;
+      modalImage.classList.toggle('is-size-chart', isSizeChart(source.dataset.modalImage));
       modalGallery.querySelectorAll('.modal-thumbnail').forEach((thumbnail) => {
         thumbnail.classList.toggle('is-active', thumbnail === primaryButton);
       });
@@ -108,10 +112,12 @@ function openModal(trigger) {
     image.alt = `${source.dataset.modalTitle}の商品写真 ${index + 2}`;
     image.loading = 'lazy';
     image.decoding = 'async';
+    image.classList.toggle('is-size-chart', isSizeChart(imagePath));
     button.appendChild(image);
     button.addEventListener('click', () => {
       modalImage.src = imagePath;
       modalImage.alt = image.alt;
+      modalImage.classList.toggle('is-size-chart', isSizeChart(imagePath));
       modalGallery.querySelectorAll('.modal-thumbnail').forEach((thumbnail) => {
         thumbnail.classList.toggle('is-active', thumbnail === button);
       });
