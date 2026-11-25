@@ -79,6 +79,11 @@ const PRODUCTS = Object.freeze({
     name: "CCC Logo Sweat",
     price: 6600,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "swarm-telepathy-sweat": {
+    name: "SWARM TELEPATHY Sweat",
+    price: 6600,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
