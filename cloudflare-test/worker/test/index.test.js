@@ -185,6 +185,13 @@ test("accepts SWARM TELEPATHY Sweat sizes at 6600 yen", () => {
   assert.equal(items[0].quantity, 1);
 });
 
+test("accepts SWARM TELEPATHY L/S sizes at 5500 yen", () => {
+  const items = validateCart([{ productId: "swarm-telepathy-ls", variant: "L", quantity: 1 }]);
+  assert.equal(items[0].name, "SWARM TELEPATHY L/S — L");
+  assert.equal(items[0].unitAmount, 5500);
+  assert.equal(items[0].quantity, 1);
+});
+
 test("verifies a current Stripe webhook signature", async () => {
   const payload = JSON.stringify({ id: "evt_test", type: "checkout.session.completed" });
   const secret = "whsec_test_secret";

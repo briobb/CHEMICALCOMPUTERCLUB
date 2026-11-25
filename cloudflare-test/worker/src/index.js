@@ -84,6 +84,11 @@ const PRODUCTS = Object.freeze({
     name: "SWARM TELEPATHY Sweat",
     price: 6600,
     sizes: ["S", "M", "L", "XL"]
+  },
+  "swarm-telepathy-ls": {
+    name: "SWARM TELEPATHY L/S",
+    price: 5500,
+    sizes: ["S", "M", "L", "XL"]
   }
 });
 
